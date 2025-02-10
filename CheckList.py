@@ -9,6 +9,8 @@ from flask import Flask, Response
 import io
 import picamera
 import socket
+from tools.LickDetector import GetDetector
+from tools.PositionRecorder import GetEncoder
 
 
 args = argparse.ArgumentParser()

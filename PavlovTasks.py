@@ -8,8 +8,8 @@ from TaskManager import GetModules
 import argparse
 from utils.PinManager import Pin
 from tools.Camera import PiCameraRecorder
-from tools.LickDetector import LickDetector
-from tools.PositionRecorder import PositionEncoder
+from tools.LickDetector import GetDetector
+from tools.PositionRecorder import GetEncoder
 
 
 args = argparse.ArgumentParser()
