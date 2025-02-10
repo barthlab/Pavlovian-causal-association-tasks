@@ -16,7 +16,7 @@ UNICODE_TRIAL = {
     "NoWater": f"\x1b[100mNoWater\x1b[0m",
     "Water": f"\x1b[104mWater\x1b[0m",
     "Sleep": f"\x1b[90mSleep\x1b[0m",
-    "Buzzer": f"\x1b[46mBuzzer\x1b[0m",
+    "Buzzer": f"\x1b[45mBuzzer\x1b[0m",
 }
 
 

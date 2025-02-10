@@ -7,7 +7,7 @@ import random
 import numpy as np
 # from scipy.stats import qmc
 from copy import copy, deepcopy
-
+from typing import List
 from utils.Logger import CSVFile
 from utils.Utils import *
 from Config import *
@@ -72,7 +72,7 @@ class TaskInstance:
 
     def vis(self):
         print(self.module_json['task_name'])
-        def recursive_paint(tmp_list: list[str]) -> list[str]:
+        def recursive_paint(tmp_list: List[str]) -> List[str]:
             tmp_key, tmp_value = tmp_list
             result_blocks = []
             if tmp_key == "Timeline":
@@ -162,7 +162,7 @@ class TaskInstance:
                 trial_cnt = 1
                 while self.tape[tape_id+trial_cnt][0] not in ("Trial", "TrialEnd"):
                     trial_cnt += 1
-                print(f"Trial #{value}")
+                cprint(f"Trial #{value}", "Y")
                 yield 'RegisterBehavior'
                 self.vis_trial(self.tape[tape_id+1: tape_id+trial_cnt])
             elif key in ("Buzzer", "VerticalPuff", "HorizontalPuff", "Blank", "Water", "NoWater"):
