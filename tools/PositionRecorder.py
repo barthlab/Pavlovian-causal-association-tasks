@@ -9,7 +9,9 @@ import RPi.GPIO as GPIO
 import os
 import os.path as path
 from Config import *
-from utils import *
+from utils.Utils import GetTime
+from utils.PinManager import Pin
+from utils.Logger import CSVFile
 from copy import copy, deepcopy
 
 
