@@ -49,6 +49,14 @@ python PavlovTasks.py -cam -M sat50
 
 Ensure the specified task file exists in the `/tasks` directory.
 
+
+## 4.5 Convert Video
+Convert all `.h264` video in `data` to `.avi` file
+```bash
+python VideoConvert.py
+```
+
+
 ## 5. Directory Structure
 
 ```
@@ -69,6 +77,7 @@ pavlovian-causal-association-tasks/
 ├── CheckList.py
 ├── Config.py
 ├── TaskManager.py
+├── VideoConvert.py
 └── PavlovTasks.py
 ```
 
