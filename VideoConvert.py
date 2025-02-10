@@ -20,6 +20,6 @@ for dir_path, _ , _ in os.walk(SAVE_DIR):
         time_start = time.time()
         try:
             subprocess.run(command, check=True, shell=True)
-            print(f"Conversion successful: {output_file}, takes {time.time()-time_start}s")
+            print(f"Conversion successful: {output_file}, takes {time.time()-time_start:.2f}s")
         except subprocess.CalledProcessError as e:
             print(f"Error occurred: {e}")
