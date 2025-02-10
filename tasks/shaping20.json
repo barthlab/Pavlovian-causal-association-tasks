@@ -1,0 +1,20 @@
+{
+  "task_name": "Shaping 2.0s interval",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 100],
+      ["Trials", {
+        "total_duration": 400,
+        "trial_content": [
+          "Timeline",[
+            ["Sleep", [12, 18]],
+            ["Buzzer", 0.1],
+            ["Sleep", 2.0],
+            ["Water", 0.05]
+          ]
+        ]
+      }],
+      ["Sleep", 100]
+    ]
+  ]
+}
