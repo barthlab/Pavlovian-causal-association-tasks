@@ -162,7 +162,7 @@ class TaskInstance:
                 trial_cnt = 1
                 while self.tape[tape_id+trial_cnt][0] not in ("Trial", "TrialEnd"):
                     trial_cnt += 1
-                cprint(f"Trial #{value}", "Y")
+                cprint(f"\nTrial #{value}", "Y")
                 yield 'RegisterBehavior'
                 self.vis_trial(self.tape[tape_id+1: tape_id+trial_cnt])
             elif key in ("Buzzer", "VerticalPuff", "HorizontalPuff", "Blank", "Water", "NoWater"):
