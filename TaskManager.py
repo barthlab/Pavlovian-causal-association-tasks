@@ -19,7 +19,7 @@ class TaskInstance:
         self.tape = []
         self.module_json = module_json
         self.read_task_json()
-        self.writer = CSVFile(path.join(SAVE_DIR, f"TIMELINE_{exp_name}_{self.task_name}.csv"),
+        self.writer = CSVFile(path.join(SAVE_DIR, f"TIMELINE_{exp_name}.csv"),
                               ["time", "details"])
 
     def read_task_json(self):
