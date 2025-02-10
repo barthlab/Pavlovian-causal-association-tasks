@@ -1,58 +1,63 @@
-# Pavlovian-causal-association-tasks
+# Pavlovian Causal Association Tasks
 
 Scripts for conducting causal associative learning experiments on Raspberry Pi OS.
 
-## Prerequisites
+## 1. Prerequisites
 
-### Operating System
-Raspberry Pi OS: Bullseye (32-bit legacy)
+**Raspberry Pi OS:** Bullseye (32-bit legacy)
 
-### Python Packages
+Install dependencies using:
 ```bash
 pip install numpy colorist
 ```
 
-## DIY Tasks
+## 2. DIY Tasks
 
-For custom task creation, refer to `/tasks/task_template.json` for the required format.
+To create custom tasks, refer to `/tasks/task_template.json` for the required format.
 
-Current implemented tasks: `pse50`, `sat50`, `sdt50`, `rpse50`, `rsat50`, `rsdt50`, `shaping05` ~ `shaping50`
+### Implemented Tasks
+- `pse50`, `sat50`, `sdt50`, `rpse50`, `rsat50`, `rsdt50`
+- `shaping05`, `shaping10`, `shaping20`, `shaping35`, `shaping50`
 
-Example task:
-![example_task.png](figures%2Fexample_task.png)
+### Example Task
+![Example Task](figures/example_task.png)
 
+## 3. Configuration
 
-## CheckList
+### Modify Configuration
+Edit `Config.py` to adjust setup parameters.
 
-Example usage of the `CheckList.py` script:
+### Check Hardware Components
+Use `CheckList.py` to verify hardware components before running experiments:
 ```bash
-python CheckList.py -lick     # check lick sensor
-python CheckList.py -puff     # check puff delivery
-python CheckList.py -water    # check water delivery
-python CheckList.py -camera   # check camera
-python CheckList.py -wheel    # check rotatory encoder
+python CheckList.py -lick     # Check lick sensor
+python CheckList.py -puff     # Check puff delivery
+python CheckList.py -water    # Check water delivery
+python CheckList.py -camera   # Check camera functionality
+python CheckList.py -wheel    # Check rotary encoder
 ```
 
-## Running Tasks
+## 4. Running Tasks
 
-Example usage of the `PavlovTasks.py` script:
+Execute `PavlovTasks.py` to run experiments:
 ```bash
 python PavlovTasks.py -cam -M sat50
 ```
-- `-cam`: Enables camera recording.
-- `-m` or `-M` followed by a module name (e.g., `sat50`) should match one of your task `.json` files in `/tasks`.
+#### Command Options:
+- `-cam` : Enables camera recording
+- `-m` or `-M <task_name>` : Specifies the task module (must match a `.json` file in `/tasks`)
 
-Ensure that the specified module file exists.
+Ensure the specified task file exists in the `/tasks` directory.
 
-## Directory Structure
+## 5. Directory Structure
 
 ```
 pavlovian-causal-association-tasks/
 ├── tasks
 │   ├── task_template.json  
-│   └── [your_task_files].json 
+│   └── [your_task_files].json
 ├── data
-│   └── .xlsx / .csv 
+│   └── [experiment_data].xlsx / .csv
 ├── tools
 │   ├── Camera.py
 │   ├── LickDetector.py
@@ -65,9 +70,9 @@ pavlovian-causal-association-tasks/
 ├── Config.py
 ├── TaskManager.py
 └── PavlovTasks.py
-
 ```
 
-## License
+## 6. License
 
 This project is licensed under the [MIT License](LICENSE).
+
