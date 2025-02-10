@@ -5,7 +5,7 @@ import json
 import re
 import random
 import numpy as np
-from scipy.stats import qmc
+# from scipy.stats import qmc
 from copy import copy, deepcopy
 
 from utils.Logger import CSVFile
@@ -28,7 +28,8 @@ class TaskInstance:
         if "task_rng" not in self.module_json or self.module_json['task_rng'] == "default":
             random_pool = np.random.uniform(0, 1, 1000)
         elif self.module_json['task_rng'] == "halton":
-            random_pool = qmc.Halton(d=1, scramble=True).random(1000)
+            random_pool = np.random.uniform(0, 1, 1000)
+            # random_pool = qmc.Halton(d=1, scramble=True).random(1000)
         else:
             raise NotImplementedError(f"RNG {self.module_json['task_rng']}Not Implemented!")
         timer = 0
