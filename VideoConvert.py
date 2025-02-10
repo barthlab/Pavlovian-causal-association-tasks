@@ -15,8 +15,7 @@ for dir_path, _ , _ in os.walk(SAVE_DIR):
         if path.exists(output_file):
             continue
         command = (r"ffmpeg -framerate 30 -i {} -q:v 6 -vf fps=30 "
-                   r"{}").format(file_path, output_file)
-                   # r"-hide_banner -loglevel warning {}").format(file_path, output_file)
+                   r"-hide_banner -loglevel warning {}").format(file_path, output_file)
         print(command)
         time_start = time.time()
         try:
