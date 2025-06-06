@@ -1,4 +1,5 @@
 import csv
+from typing import List
 
 
 class CSVFile:
@@ -25,7 +26,7 @@ class CSVFile:
             writer = csv.DictWriter(f, fieldnames=self.headers)
             writer.writerow(kwargs)
 
-    def write_multiple(self, dict_list: list[dict]):
+    def write_multiple(self, dict_list: List[dict]):
         with open(self.file_dir, 'a', newline='') as f:
             writer = csv.DictWriter(f, fieldnames=self.headers)
             for tmp_dict in dict_list:

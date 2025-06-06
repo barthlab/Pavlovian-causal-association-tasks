@@ -4,7 +4,7 @@ import os.path as path
 import numpy as np
 import RPi.GPIO as GPIO
 from Config import *
-from TaskManager import GetModules
+from RealTimeTaskManager import GetModules
 import argparse
 from utils.PinManager import Pin
 from tools.Camera import PiCameraRecorder

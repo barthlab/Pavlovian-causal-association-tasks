@@ -1,9 +1,9 @@
 {
-  "task_name": "Acclimation 80% water",
+  "task_name": "acclimation 80% water passive",
   "task_rng": "halton",
   "task_content": [
     "Timeline", [
-      ["Sleep", 100],
+      ["Sleep", 10],
       ["Trials", {
         "total_duration": 400,
         "trial_content": [
@@ -24,7 +24,7 @@
           ]
         ]
       }],
-      ["Sleep", 100]
+      ["Sleep", 10]
     ]
   ]
 }

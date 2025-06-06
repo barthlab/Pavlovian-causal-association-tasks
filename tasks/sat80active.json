@@ -1,0 +1,35 @@
+{
+  "task_name": "sensory association 80% water active",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 10],
+      ["Trials", {
+        "total_duration": 400,
+        "trial_content": [
+          "Timeline",[
+            ["Sleep", [12, 18]],
+            ["Buzzer", 0.1],
+            ["Sleep", 1.5],
+            ["Choice", [
+              [0.8, ["Timeline", [
+                ["VerticalPuff", 0.5],
+                ["Sleep", 1.5],
+                ["Response", {
+                  "total_duration": 1,
+                  "lick": ["Timeline", [["Sleep", 0.2], ["Water", 0.02]]],
+                  "no-lick": ["Timeline", [["Sleep", 0.2]]]
+                }]
+              ]]],
+              [0.2, ["Timeline", [
+                ["Blank", 0.5],
+                ["Sleep", 1.5]
+              ]]]
+            ]]
+          ]
+        ]
+      }],
+      ["Sleep", 10]
+    ]
+  ]
+}
