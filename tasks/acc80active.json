@@ -5,20 +5,20 @@
     "Timeline", [
       ["Sleep", 10],
       ["Trials", {
-        "total_duration": 400,
+        "total_duration": 600,
         "trial_content": [
           "Timeline",[
-            ["Sleep", [12, 18]],
             ["Buzzer", 0.1],
             ["Sleep", 1.5],
             ["Response", {
               "total_duration": 1,
               "lick": ["Choice", [
-                [0.8, ["Timeline", [["Sleep", 0.2], ["Water", 0.02]]]],
-                [0.2, ["Timeline", [["Sleep", 0.2]]]]
+                [0.8, ["Water", 0.02]],
+                [0.2, ["Pass", 0]]
               ]],
-              "no-lick": ["Timeline", [["Sleep", 0.2]]]
-            }]
+              "no-lick": ["Sleep", 2]
+            }],
+            ["Sleep", [8, 12]]
           ]
         ]
       }],

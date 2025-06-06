@@ -49,10 +49,10 @@ def main():
 
     # main loop
     exp_name = input("Experiment ID: ")
-    module = GetModules(module_name=cfg.M, exp_name=exp_name)
 
     lick_detector = GetDetector(exp_name=exp_name)
     locomotion_encoder = GetEncoder(exp_name=exp_name)
+    module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector)
 
     with PiCameraRecorder(exp_name=exp_name, records=video_recording) as camera:
         for _, command in enumerate(module.run()):

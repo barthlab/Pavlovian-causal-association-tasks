@@ -1,5 +1,5 @@
 {
-  "task_name": "sensory association 80% water active",
+  "task_name": "sensory association 80% water passive",
   "task_rng": "default",
   "task_content": [
     "Timeline", [
@@ -14,13 +14,9 @@
               [0.8, ["Timeline", [
                 ["VerticalPuff", 0.5],
                 ["Sleep", 1.5],
-                ["Response", {
-                  "total_duration": 1,
-                  "lick": ["Choice", [
-                    [0.8, ["Water", 0.02]],
-                    [0.2, ["Pass", 0]]]],
-                  "no-lick": ["Sleep", 2]
-                }]]]],
+                ["Choice", [
+                  [0.8, ["Water", 0.02]],
+                  [0.2, ["Pass", 0]]]]]]],
               [0.2, ["Timeline", [
                 ["Blank", 0.5],
                 ["Sleep", 1.5]

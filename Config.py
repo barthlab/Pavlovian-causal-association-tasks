@@ -27,3 +27,8 @@ SAVE_DIR = path.join(path.dirname(__file__), "data")
 TASK_DIR = path.join(path.dirname(__file__), "tasks")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
+
+# Response Window
+RESPONSE_WINDOW_CHECKING_DT = 0.2
+
+

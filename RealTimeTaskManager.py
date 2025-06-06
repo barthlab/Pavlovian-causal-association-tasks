@@ -10,64 +10,21 @@ from copy import copy, deepcopy
 from typing import List
 from utils.Logger import CSVFile
 from utils.Utils import *
-# from tools.LickDetector import *
+from tools.LickDetector import *
 from Config import *
 
 
 class TaskInstance:
-    def __init__(self, module_json, exp_name):
+    def __init__(self, module_json, exp_name, lick_detector: LickDetector = None):
         self.log_history = []
 
         self.module_json = module_json
         self.task_name = self.module_json['task_name']
 
+        self.lick_detector = lick_detector
+
         self.writer = CSVFile(path.join(SAVE_DIR, f"TIMELINE_{exp_name}.csv"), ["time", "details"])
         self.vis()
-        exit()
-
-    def read_task_json(self):
-
-        if "task_rng" not in self.module_json or self.module_json['task_rng'] == "default":
-            random_pool = np.random.uniform(0, 1, 1000)
-        else:
-            raise NotImplementedError(f"RNG {self.module_json['task_rng']}Not Implemented!")
-        timer = 0
-        self.tape = []
-
-        def get_value(tmp_value):
-            rx = np.random.uniform(*tmp_value) if isinstance(tmp_value, list) else float(tmp_value)
-            return np.round(rx, 3)
-
-        def recursive_read(tmp_list: list):
-            nonlocal timer
-            tmp_key, tmp_value = tmp_list
-            if tmp_key == "Timeline":
-                for tmp_timeline_list in tmp_value:
-                    recursive_read(tmp_timeline_list)
-            elif tmp_key == "Sleep":
-                sleep_duration = get_value(tmp_value)
-                timer += sleep_duration
-                self.tape.append(["Sleep", sleep_duration])
-            elif tmp_key == "Trials":
-                prev_timer = timer + 0
-                trial_cnt = 0
-                while timer < prev_timer + tmp_value['total_duration']:
-                    trial_cnt += 1
-                    self.tape.append(["Trial", trial_cnt])
-                    recursive_read(tmp_value['trial_content'])
-                self.tape.append(["TrialEnd", None])
-            elif tmp_key == "Choice":
-                probs = [tmp_choice[0] for tmp_choice in tmp_value]
-                assert sum(probs) == 1.
-                choice_index = np.random.choice(len(tmp_value), p=probs)
-                recursive_read(tmp_value[int(choice_index)][1])
-            elif tmp_key in ("Buzzer", "VerticalPuff", "HorizontalPuff", "Blank", "Water", "NoWater"):
-                tmp_duration = get_value(tmp_value)
-                timer += tmp_duration
-                self.tape.append([tmp_key, tmp_duration])
-            else:
-                raise NotImplementedError(f"Json command {tmp_key} Not Implemented!")
-        recursive_read(self.module_json['task_content'])
 
     def vis(self):
         """Generates and prints an ASCII art representation of the task structure."""
@@ -190,6 +147,8 @@ class TaskInstance:
                 final_blocks = [" " * len(string_key), string_key, string_duration]
 
             # --- Error Handling ---
+            elif tmp_key in ("Pass", ):
+                pass
             else:
                 raise NotImplementedError(f"JSON command '{tmp_key}' is not implemented!")
 
@@ -203,39 +162,106 @@ class TaskInstance:
         for vis_line in vis_block:
             uprint(vis_line)
 
-    def vis_trial(self, tape_segment):
-        line1, line2 = "", ""
-        for tmp_key, tmp_value in tape_segment:
-            tmp_duration = f"{tmp_value} s"
-            _, string_key, string_duration = tab_block(f"-{tmp_key}-", f"-{tmp_duration}-", sub_char='-')
-            line1 += string_key
-            line2 += string_duration
-        uprint(line1)
-        uprint(line2)
-
     def run(self):
+        """
+        A generator that executes a behavioral task based on a configuration.
+
+        Yields:
+            str: Commands to control hardware.
+        """
         self.log_history.append({"time": GetTime(), "details": "task start"})
+        # Initial hardware checks
         yield 'ShortPulse'
         yield 'CheckCamera'
-        for tape_id, (key, value) in enumerate(self.tape):
-            if key == "Sleep":
-                if value > 10:
-                    cprint(f"Sleep {value}s", "M")
-                time.sleep(value)
-            elif key == "Trial":
-                trial_cnt = 1
-                while self.tape[tape_id+trial_cnt][0] not in ("Trial", "TrialEnd"):
+
+        timer = 0  # Tracks elapsed time in seconds
+
+        def get_value(tmp_value):
+            """
+            Calculates a value, treating a list as a range for a random sample.
+
+            Returns:
+                float: The calculated value, rounded to 3 decimal places.
+            """
+            if isinstance(tmp_value, list):
+                # If tmp_value is a list, sample from a uniform distribution [min, max]
+                rx = np.random.uniform(*tmp_value)
+            else:
+                rx = float(tmp_value)
+            return np.round(rx, 3)
+
+        def recursive_run(tmp_list: List):
+            """Recursively processes the task structure, executing actions based on keywords."""
+            nonlocal timer
+            tmp_key, tmp_value = tmp_list
+
+            # --- Task Structure Keywords ---
+
+            if tmp_key == "Timeline":
+                for tmp_time_list in tmp_value:
+                    recursive_run(tmp_time_list)
+
+            elif tmp_key == "Sleep":
+                sleep_duration = get_value(tmp_value)
+                timer += sleep_duration
+                # Log longer sleeps for better traceability
+                if sleep_duration >= 10:
+                    cprint(f"Sleep {sleep_duration}s", "M")
+                time.sleep(sleep_duration)
+
+            elif tmp_key == "Trials":
+                # Executes a block of trials for a specified total duration
+                trials_session_start = timer
+                trial_cnt = 0
+                while timer < trials_session_start + tmp_value['total_duration']:
                     trial_cnt += 1
-                cprint(f"\nTrial #{value}", "Y")
-                yield 'RegisterBehavior'
-                self.vis_trial(self.tape[tape_id+1: tape_id+trial_cnt])
-            elif key in ("Buzzer", "VerticalPuff", "HorizontalPuff", "Blank", "Water", "NoWater"):
-                uprint(f"-{key}-")
-                self.log_history.append({"time": GetTime(), "details": f"{key}On"})
-                yield f"{key}On"
-                time.sleep(value)
-                yield f"{key}Off"
-                self.log_history.append({"time": GetTime(), "details": f"{key}Off"})
+                    cprint(f"\nTrial #{trial_cnt}", "Y")
+                    recursive_run(tmp_value['trial_content'])
+                    yield 'RegisterBehavior'  # Save behavior data after each trial
+
+            elif tmp_key == "Choice":
+                # Probabilistically selects and executes one of several branches
+                probs = [tmp_choice[0] for tmp_choice in tmp_value]
+                assert sum(probs) == 1., "Probabilities in 'Choice' must sum to 1."
+                choice_index = np.random.choice(len(tmp_value), p=probs)
+                recursive_run(tmp_value[int(choice_index)][1])
+
+            elif tmp_key == "Response":
+                # Waits for a response (e.g., lick) within a time window
+                response_window_start = timer
+                start_history_len = len(self.lick_detector.history)
+                while timer < response_window_start + tmp_value['total_duration']:
+                    time.sleep(RESPONSE_WINDOW_CHECKING_DT)
+                    timer += RESPONSE_WINDOW_CHECKING_DT
+                    if len(self.lick_detector.history) > start_history_len:
+                        self.log_history.append({"time": GetTime(), "details": "ResponseTrigger"})
+                        recursive_run(tmp_value['lick'])
+                        break  # Exit loop after response
+                else:
+                    # Executes only if the while loop completes without a 'break' (no response)
+                    self.log_history.append({"time": GetTime(), "details": "ResponseTimeOut"})
+                    recursive_run(tmp_value["no-lick"])
+
+            # --- Hardware/Action Keywords ---
+
+            elif tmp_key in {"Buzzer", "VerticalPuff", "HorizontalPuff", "Blank", "Water", "NoWater"}:
+                # Activates a device for a specified duration
+                tmp_duration = get_value(tmp_value)
+                timer += tmp_duration
+                uprint(f"-{tmp_key}-")
+                self.log_history.append({"time": GetTime(), "details": f"{tmp_key}On"})
+                yield f"{tmp_key}On"
+                time.sleep(tmp_duration)
+                yield f"{tmp_key}Off"
+                self.log_history.append({"time": GetTime(), "details": f"{tmp_key}Off"})
+
+            elif tmp_key in ("Pass", ):
+                pass
+            else:
+                raise NotImplementedError(f"Json command {tmp_key} Not Implemented!")
+
+        # Start the recursive execution from the top-level configuration
+        recursive_run(self.module_json['task_content'])
 
         self.log_history.append({"time": GetTime(), "details": "task end"})
         yield 'RegisterBehavior'
@@ -246,18 +272,18 @@ class TaskInstance:
         self.log_history = self.log_history[len(tmp_snapshot):]
 
 
-def GetModules(module_name, exp_name):
+def GetModules(module_name, exp_name, **kwargs):
     for (dirpath, dirnames, filenames) in os.walk(TASK_DIR):
         for filename in filenames:
             if filename[-5:] == ".json" and filename[:-5].casefold() == module_name.casefold():
                 with open(path.join(dirpath, filename), "r") as file:
                     module_json = json.load(file)
-                    return TaskInstance(module_json=module_json, exp_name=exp_name)
+                    return TaskInstance(module_json=module_json, exp_name=exp_name, **kwargs)
     raise FileNotFoundError(f"Module {module_name} Not Found in {TASK_DIR}!")
 
 
 if __name__ == "__main__":
-    x = GetModules("acc80passive", "test_file")
+    x = GetModules("sat80active", "test_file")
 
     t0 = time.time()
     for command in x.run():
