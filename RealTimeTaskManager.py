@@ -10,12 +10,12 @@ from copy import copy, deepcopy
 from typing import List
 from utils.Logger import CSVFile
 from utils.Utils import *
-from tools.LickDetector import *
+# from tools.LickDetector import *
 from Config import *
 
 
 class TaskInstance:
-    def __init__(self, module_json, exp_name, lick_detector: LickDetector = None):
+    def __init__(self, module_json, exp_name, lick_detector = None):
         self.log_history = []
 
         self.module_json = module_json
@@ -120,19 +120,19 @@ class TaskInstance:
                 no_lick_blocks = recursive_paint(tmp_value['no-lick'])
                 max_width = max(len(lick_blocks[0]), len(no_lick_blocks[0]))
 
-                _, *response_strings = tab_block('-lick-', '-no-lick-')
+                _, *response_strings = tab_block('-lick-', f"|> lick in {tmp_value['total_duration']}s <|", '-no-lick-',)
 
-                for i, (resp_str, block) in enumerate(zip(response_strings, [lick_blocks, no_lick_blocks])):
+                for i, (resp_str, block) in enumerate(zip(response_strings, [lick_blocks, [" ", ], no_lick_blocks])):
                     _, *sync_strings, _ = tab_block(*block, " " * max_width, centering=False)
                     new_strings = [" "*(len(resp_str) + 1) + single_sync_string for single_sync_string in sync_strings]
                     center_height = len(new_strings) // 2
                     new_strings[center_height] = f" {resp_str}{new_strings[center_height][1 + len(resp_str):]}"
 
                     # Draw vertical connector lines.
-                    if i == 0:  # Top (lick) branch
+                    if i < 2:  # Top (lick) branch
                         for row in range(center_height, len(new_strings)):
                             new_strings[row] = f"|{new_strings[row][1:]}"
-                    if i == 1:  # Bottom (no-lick) branch
+                    if i > 0:  # Bottom (no-lick) branch
                         for row in range(center_height + 1):
                             new_strings[row] = f"|{new_strings[row][1:]}"
                     final_blocks.extend(new_strings)
@@ -235,11 +235,13 @@ class TaskInstance:
                     time.sleep(RESPONSE_WINDOW_CHECKING_DT)
                     timer += RESPONSE_WINDOW_CHECKING_DT
                     if len(self.lick_detector.history) > start_history_len:
+                        uprint('-lick-')
                         self.log_history.append({"time": GetTime(), "details": "ResponseTrigger"})
                         yield from recursive_run(tmp_value['lick'])
                         break  # Exit loop after response
                 else:
                     # Executes only if the while loop completes without a 'break' (no response)
+                    uprint('-no-lick-')
                     self.log_history.append({"time": GetTime(), "details": "ResponseTimeOut"})
                     yield from recursive_run(tmp_value["no-lick"])
 
