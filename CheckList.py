@@ -11,6 +11,7 @@ import picamera
 import socket
 from tools.LickDetector import GetDetector
 from tools.PositionRecorder import GetEncoder
+from tools.Buzzer import GetBuzzer
 
 
 args = argparse.ArgumentParser()
@@ -19,6 +20,7 @@ args.add_argument("-water", "--water", action='store_true', help="check water de
 args.add_argument("-camera", "--camera", action='store_true', help="check camera")
 args.add_argument("-lick", "--lick", action='store_true', help="check lick sensor")
 args.add_argument("-wheel", "--wheel", action='store_true', help="check rotatory encoder")
+args.add_argument("-buzzer", "--buzzer", action='store_true', help="check buzzer")
 cfg = args.parse_args()
 print(cfg)
 
@@ -143,6 +145,17 @@ def check_wheel():
     GPIO.cleanup()
 
 
+def check_buzzer():
+    GPIO.setmode(GPIO.BOARD)
+    buzzer_ = GetBuzzer()
+    for i in range(10):
+        buzzer_.on()
+        time.sleep(1)
+        buzzer_.stop()
+        time.sleep(1)
+    GPIO.cleanup()
+
+
 if __name__ == "__main__":
     if cfg.puff:
         print("Checking Puff...")
@@ -159,3 +172,6 @@ if __name__ == "__main__":
     elif cfg.wheel:
         print("Checking Rotatory Encoder...")
         check_wheel()
+    elif cfg.buzzer:
+        print("Checking Buzzer...")
+        check_buzzer()

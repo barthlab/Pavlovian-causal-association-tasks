@@ -16,6 +16,7 @@ from copy import copy, deepcopy
 
 class Buzzer:
     def __init__(self, buzzer_pin: int, frequency: int):
+        GPIO.setup(buzzer_pin, GPIO.OUT)
         self.pwm = GPIO.PWM(buzzer_pin, frequency)
 
     def on(self):
