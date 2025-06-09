@@ -148,7 +148,7 @@ class TaskInstance:
 
             # --- Error Handling ---
             elif tmp_key in ("Pass", ):
-                pass
+                final_blocks = [" ", ]
             else:
                 raise NotImplementedError(f"JSON command '{tmp_key}' is not implemented!")
 
