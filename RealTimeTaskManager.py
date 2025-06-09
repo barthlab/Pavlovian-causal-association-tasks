@@ -169,6 +169,7 @@ class TaskInstance:
         Yields:
             str: Commands to control hardware.
         """
+        cprint(f"Task starts", "B")
         self.log_history.append({"time": GetTime(), "details": "task start"})
         # Initial hardware checks
         yield 'ShortPulse'
@@ -199,14 +200,14 @@ class TaskInstance:
 
             if tmp_key == "Timeline":
                 for tmp_time_list in tmp_value:
-                    recursive_run(tmp_time_list)
+                    yield from recursive_run(tmp_time_list)
 
             elif tmp_key == "Sleep":
                 sleep_duration = get_value(tmp_value)
                 timer += sleep_duration
                 # Log longer sleeps for better traceability
-                if sleep_duration >= 10:
-                    cprint(f"Sleep {sleep_duration}s", "M")
+                if sleep_duration >= 5:
+                    cprint(f"Sleep {sleep_duration:.1f}s", "M")
                 time.sleep(sleep_duration)
 
             elif tmp_key == "Trials":
@@ -216,7 +217,7 @@ class TaskInstance:
                 while timer < trials_session_start + tmp_value['total_duration']:
                     trial_cnt += 1
                     cprint(f"\nTrial #{trial_cnt}", "Y")
-                    recursive_run(tmp_value['trial_content'])
+                    yield from recursive_run(tmp_value['trial_content'])
                     yield 'RegisterBehavior'  # Save behavior data after each trial
 
             elif tmp_key == "Choice":
@@ -224,7 +225,7 @@ class TaskInstance:
                 probs = [tmp_choice[0] for tmp_choice in tmp_value]
                 assert sum(probs) == 1., "Probabilities in 'Choice' must sum to 1."
                 choice_index = np.random.choice(len(tmp_value), p=probs)
-                recursive_run(tmp_value[int(choice_index)][1])
+                yield from recursive_run(tmp_value[int(choice_index)][1])
 
             elif tmp_key == "Response":
                 # Waits for a response (e.g., lick) within a time window
@@ -235,12 +236,12 @@ class TaskInstance:
                     timer += RESPONSE_WINDOW_CHECKING_DT
                     if len(self.lick_detector.history) > start_history_len:
                         self.log_history.append({"time": GetTime(), "details": "ResponseTrigger"})
-                        recursive_run(tmp_value['lick'])
+                        yield from recursive_run(tmp_value['lick'])
                         break  # Exit loop after response
                 else:
                     # Executes only if the while loop completes without a 'break' (no response)
                     self.log_history.append({"time": GetTime(), "details": "ResponseTimeOut"})
-                    recursive_run(tmp_value["no-lick"])
+                    yield from recursive_run(tmp_value["no-lick"])
 
             # --- Hardware/Action Keywords ---
 
@@ -261,10 +262,11 @@ class TaskInstance:
                 raise NotImplementedError(f"Json command {tmp_key} Not Implemented!")
 
         # Start the recursive execution from the top-level configuration
-        recursive_run(self.module_json['task_content'])
+        yield from recursive_run(self.module_json['task_content'])
 
         self.log_history.append({"time": GetTime(), "details": "task end"})
         yield 'RegisterBehavior'
+        cprint(f"Task ends", "B")
 
     def archive(self):
         tmp_snapshot = deepcopy(self.log_history)
@@ -286,5 +288,5 @@ if __name__ == "__main__":
     x = GetModules("sat80active", "test_file")
 
     t0 = time.time()
-    for command in x.run():
-        print(time.time()-t0, command)
+    for _command in x.run():
+        print(time.time()-t0, _command)

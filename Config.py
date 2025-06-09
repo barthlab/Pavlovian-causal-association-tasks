@@ -18,7 +18,7 @@ ENCODER_B_PIN = 36
 MICROSCOPE_TTL_PULSE = None
 VIDEO_TTL_PULSE = None
 
-BUZZER_PIN = 31
+BUZZER_PIN = 31  # make sure it's PWM pin
 LICKPORT_PIN = 37
 
 
@@ -30,5 +30,6 @@ os.makedirs(SAVE_DIR, exist_ok=True)
 
 # Response Window
 RESPONSE_WINDOW_CHECKING_DT = 0.2
+PURETONE_HZ = 3400
 
 

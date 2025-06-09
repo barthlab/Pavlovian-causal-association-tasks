@@ -1,7 +1,7 @@
 #!/bin/env python3
 
 """
-Encoder test script for raspberry pi
+Lick sensor test script for raspberry pi
 """
 
 import time

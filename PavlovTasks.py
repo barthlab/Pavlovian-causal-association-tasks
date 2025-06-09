@@ -10,6 +10,7 @@ from utils.PinManager import Pin
 from tools.Camera import PiCameraRecorder
 from tools.LickDetector import GetDetector
 from tools.PositionRecorder import GetEncoder
+from tools.Buzzer import GetBuzzer
 
 
 args = argparse.ArgumentParser()
@@ -33,7 +34,6 @@ def main():
     airpuff_pin = Pin(AIRPUFF_SOLENOID_PIN, GPIO.OUT)
     fake1_pin = Pin(FAKE1_SOLENOID_PIN, GPIO.OUT)
     fake2_pin = Pin(FAKE2_SOLENOID_PIN, GPIO.OUT)
-    buzzer_pin = Pin(BUZZER_PIN, GPIO.OUT)
 
     microscope_pin = Pin(MICROSCOPE_TTL_PULSE, GPIO.OUT)
     video_pin = Pin(VIDEO_TTL_PULSE, GPIO.OUT)
@@ -42,7 +42,6 @@ def main():
     airpuff_pin.output(GPIO.HIGH)
     fake1_pin.output(GPIO.HIGH)
     fake2_pin.output(GPIO.HIGH)
-    buzzer_pin.output(GPIO.HIGH)
 
     microscope_pin.output(GPIO.LOW)
     video_pin.output(GPIO.LOW)
@@ -52,6 +51,7 @@ def main():
 
     lick_detector = GetDetector(exp_name=exp_name)
     locomotion_encoder = GetEncoder(exp_name=exp_name)
+    buzzer_ = GetBuzzer()
     module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector)
 
     with PiCameraRecorder(exp_name=exp_name, records=video_recording) as camera:
@@ -78,9 +78,9 @@ def main():
                 fake2_pin.output(GPIO.HIGH)
 
             elif command == "BuzzerOn":
-                buzzer_pin.output(GPIO.LOW)
+                buzzer_.on()
             elif command == "BuzzerOff":
-                buzzer_pin.output(GPIO.HIGH)
+                buzzer_.stop()
 
             elif command == 'WaterOn':
                 water_pin.output(GPIO.LOW)
