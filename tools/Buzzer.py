@@ -1,17 +1,11 @@
 #!/bin/env python3
 
 """
-Encoder test script for raspberry pi
+PWM tone generator
 """
 
-import time
 import RPi.GPIO as GPIO
-import os
-import sys
-import os.path as path
-from Config import *
-from utils.PinManager import Pin
-from copy import copy, deepcopy
+import Config as Config
 
 
 class Buzzer:
@@ -29,5 +23,4 @@ class Buzzer:
 
 
 def GetBuzzer(*args):
-    return Buzzer(BUZZER_PIN, PURETONE_HZ)
-
+    return Buzzer(Config.BUZZER_PIN, Config.PURETONE_HZ)

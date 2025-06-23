@@ -1,36 +1,34 @@
 import time
 import os
-import os.path
+import os.path as path
 import json
-import re
-import random
 import numpy as np
-# from scipy.stats import qmc
-from copy import copy, deepcopy
-from typing import List
+from copy import deepcopy
+from typing import Any, List, Tuple
 from utils.Logger import CSVFile
-from utils.Utils import *
-# from tools.LickDetector import *
-from Config import *
+from utils.Utils import tab_block, cprint, uprint, GetTime
+import Config as Config
 
 
 class TaskInstance:
-    def __init__(self, module_json, exp_name, lick_detector = None):
+    def __init__(self, module_json, exp_name, lick_detector=None):
         self.log_history = []
 
         self.module_json = module_json
-        self.task_name = self.module_json['task_name']
+        self.task_name = self.module_json["task_name"]
 
         self.lick_detector = lick_detector
 
-        self.writer = CSVFile(path.join(SAVE_DIR, f"TIMELINE_{exp_name}.csv"), ["time", "details"])
+        self.writer = CSVFile(
+            path.join(Config.SAVE_DIR, f"TIMELINE_{exp_name}.csv"), ["time", "details"]
+        )
         self.vis()
 
     def vis(self):
         """Generates and prints an ASCII art representation of the task structure."""
-        print(self.module_json['task_name'])
+        print(self.module_json["task_name"])
 
-        def recursive_paint(tmp_list: List[str]) -> List[str]:
+        def recursive_paint(tmp_list: Tuple[str, Any]) -> List[str]:
             """
             Recursively builds an ASCII art representation of a task component.
 
@@ -55,7 +53,11 @@ class TaskInstance:
                 # canvas dimensions (max height and total width).
                 result_blocks = [recursive_paint(item) for item in tmp_value]
                 max_height = max(len(block) for block in result_blocks)
-                max_width = sum(len(block[0]) for block in result_blocks) + len(result_blocks) + 1
+                max_width = (
+                    sum(len(block[0]) for block in result_blocks)
+                    + len(result_blocks)
+                    + 1
+                )
 
                 # Create a blank canvas and paste each component side-by-side,
                 # centered vertically within the timeline.
@@ -66,17 +68,21 @@ class TaskInstance:
                     start_height = (max_height - height) // 2
                     for i, row_content in enumerate(block):
                         row_idx = start_height + i
-                        final_blocks[row_idx] = (final_blocks[row_idx][:width_ptr] +
-                                                 row_content +
-                                                 final_blocks[row_idx][width_ptr + width:])
+                        final_blocks[row_idx] = (
+                            final_blocks[row_idx][:width_ptr]
+                            + row_content
+                            + final_blocks[row_idx][width_ptr + width :]
+                        )
                     width_ptr += width + 1
 
             # --- Trials: A repeating container ---
             elif tmp_key == "Trials":
                 # Render the inner content and wrap it in a container labeled "N x"
                 # to signify a repeating trial.
-                result_block = recursive_paint(tmp_value['trial_content'])
-                new_strings = tab_block(*result_block, f"{tmp_value['total_duration']} s", sub_char="-")
+                result_block = recursive_paint(tmp_value["trial_content"])
+                new_strings = tab_block(
+                    *result_block, f"{tmp_value['total_duration']} s", sub_char="-"
+                )
 
                 max_height = len(new_strings) + 1
                 max_width = len(new_strings[0]) + 7
@@ -97,11 +103,20 @@ class TaskInstance:
                 prob_strings = [f"-{int(choice[0] * 100)}%-" for choice in tmp_value]
                 _, *sync_prob_strings = tab_block(*prob_strings)
 
-                for i, (prob_str, block) in enumerate(zip(sync_prob_strings, result_blocks)):
-                    _, *sync_strings, _ = tab_block(*block, " " * max_width, centering=False)
-                    new_strings = [" "*(len(prob_str) + 1) + single_sync_string for single_sync_string in sync_strings]
+                for i, (prob_str, block) in enumerate(
+                    zip(sync_prob_strings, result_blocks)
+                ):
+                    _, *sync_strings, _ = tab_block(
+                        *block, " " * max_width, centering=False
+                    )
+                    new_strings = [
+                        " " * (len(prob_str) + 1) + single_sync_string
+                        for single_sync_string in sync_strings
+                    ]
                     center_height = len(new_strings) // 2
-                    new_strings[center_height] = f" {prob_str}{new_strings[center_height][1 + len(prob_str):]}"
+                    new_strings[center_height] = (
+                        f" {prob_str}{new_strings[center_height][1 + len(prob_str) :]}"
+                    )
 
                     # Draw vertical connector lines for the branches.
                     if i < len(tmp_value) - 1:  # Not the last choice
@@ -116,17 +131,39 @@ class TaskInstance:
             elif tmp_key == "Response":
                 # Similar to "Choice", but for a binary lick/no-lick decision.
                 # Renders both outcomes and stacks them with a connecting branch.
-                lick_blocks = recursive_paint(tmp_value['lick'])
-                no_lick_blocks = recursive_paint(tmp_value['no-lick'])
+                lick_blocks = recursive_paint(tmp_value["lick"])
+                no_lick_blocks = recursive_paint(tmp_value["no-lick"])
                 max_width = max(len(lick_blocks[0]), len(no_lick_blocks[0]))
 
-                _, *response_strings = tab_block('-lick-', f"|> lick in {tmp_value['total_duration']}s <|", '-no-lick-',)
+                _, *response_strings = tab_block(
+                    "-lick-",
+                    f"|> lick in {tmp_value['total_duration']}s <|",
+                    "-no-lick-",
+                )
 
-                for i, (resp_str, block) in enumerate(zip(response_strings, [lick_blocks, [" ", ], no_lick_blocks])):
-                    _, *sync_strings, _ = tab_block(*block, " " * max_width, centering=False)
-                    new_strings = [" "*(len(resp_str) + 1) + single_sync_string for single_sync_string in sync_strings]
+                for i, (resp_str, block) in enumerate(
+                    zip(
+                        response_strings,
+                        [
+                            lick_blocks,
+                            [
+                                " ",
+                            ],
+                            no_lick_blocks,
+                        ],
+                    )
+                ):
+                    _, *sync_strings, _ = tab_block(
+                        *block, " " * max_width, centering=False
+                    )
+                    new_strings = [
+                        " " * (len(resp_str) + 1) + single_sync_string
+                        for single_sync_string in sync_strings
+                    ]
                     center_height = len(new_strings) // 2
-                    new_strings[center_height] = f" {resp_str}{new_strings[center_height][1 + len(resp_str):]}"
+                    new_strings[center_height] = (
+                        f" {resp_str}{new_strings[center_height][1 + len(resp_str) :]}"
+                    )
 
                     # Draw vertical connector lines.
                     if i < 2:  # Top (lick) branch
@@ -138,27 +175,45 @@ class TaskInstance:
                     final_blocks.extend(new_strings)
 
             # --- Base Cases: Simple timed events ---
-            elif tmp_key in ("Sleep", "Buzzer", "VerticalPuff", "HorizontalPuff", "Blank", "Water", "NoWater"):
+            elif tmp_key in (
+                "Sleep",
+                "Buzzer",
+                "VerticalPuff",
+                "HorizontalPuff",
+                "Blank",
+                "Water",
+                "NoWater",
+            ):
                 # These are terminal nodes. Format the event name and duration into a
                 # simple, standardized block, handling both fixed and ranged durations.
-                duration_str = (f"{tmp_value} s" if not isinstance(tmp_value, list)
-                                else f"{tmp_value[0]}~{tmp_value[1]} s")
-                _, string_key, string_duration = tab_block(f"-{tmp_key}-", f"-{duration_str}-", sub_char='-')
+                duration_str = (
+                    f"{tmp_value} s"
+                    if not isinstance(tmp_value, list)
+                    else f"{tmp_value[0]}~{tmp_value[1]} s"
+                )
+                _, string_key, string_duration = tab_block(
+                    f"-{tmp_key}-", f"-{duration_str}-", sub_char="-"
+                )
                 final_blocks = [" " * len(string_key), string_key, string_duration]
 
             # --- Error Handling ---
-            elif tmp_key in ("Pass", ):
-                final_blocks = [" ", ]
+            elif tmp_key in ("Pass",):
+                final_blocks = [
+                    " ",
+                ]
             else:
-                raise NotImplementedError(f"JSON command '{tmp_key}' is not implemented!")
+                raise NotImplementedError(
+                    f"JSON command '{tmp_key}' is not implemented!"
+                )
 
             # Sanity check to ensure all lines in a block have the same width.
-            assert len(set(map(len, final_blocks))) == 1, \
+            assert len(set(map(len, final_blocks))) == 1, (
                 f"Block for '{tmp_key}' has inconsistent line widths."
+            )
             return final_blocks
 
         # Generate and print the final ASCII art for the entire task.
-        vis_block = recursive_paint(self.module_json['task_content'])
+        vis_block = recursive_paint(self.module_json["task_content"])
         for vis_line in vis_block:
             uprint(vis_line)
 
@@ -169,11 +224,11 @@ class TaskInstance:
         Yields:
             str: Commands to control hardware.
         """
-        cprint(f"Task starts", "B")
+        cprint("Task starts", "B")
         self.log_history.append({"time": GetTime(), "details": "task start"})
         # Initial hardware checks
-        yield 'ShortPulse'
-        yield 'CheckCamera'
+        yield "ShortPulse"
+        yield "CheckCamera"
 
         timer = 0  # Tracks elapsed time in seconds
 
@@ -214,40 +269,51 @@ class TaskInstance:
                 # Executes a block of trials for a specified total duration
                 trials_session_start = timer
                 trial_cnt = 0
-                while timer < trials_session_start + tmp_value['total_duration']:
+                while timer < trials_session_start + tmp_value["total_duration"]:
                     trial_cnt += 1
                     cprint(f"\nTrial #{trial_cnt}", "Y")
-                    yield from recursive_run(tmp_value['trial_content'])
-                    yield 'RegisterBehavior'  # Save behavior data after each trial
+                    yield from recursive_run(tmp_value["trial_content"])
+                    yield "RegisterBehavior"  # Save behavior data after each trial
 
             elif tmp_key == "Choice":
                 # Probabilistically selects and executes one of several branches
                 probs = [tmp_choice[0] for tmp_choice in tmp_value]
-                assert sum(probs) == 1., "Probabilities in 'Choice' must sum to 1."
+                assert sum(probs) == 1.0, "Probabilities in 'Choice' must sum to 1."
                 choice_index = np.random.choice(len(tmp_value), p=probs)
                 yield from recursive_run(tmp_value[int(choice_index)][1])
 
             elif tmp_key == "Response":
                 # Waits for a response (e.g., lick) within a time window
                 response_window_start = timer
-                start_history_len = len(self.lick_detector.history)
-                while timer < response_window_start + tmp_value['total_duration']:
-                    time.sleep(RESPONSE_WINDOW_CHECKING_DT)
-                    timer += RESPONSE_WINDOW_CHECKING_DT
-                    if len(self.lick_detector.history) > start_history_len:
-                        uprint('-lick-')
-                        self.log_history.append({"time": GetTime(), "details": "ResponseTrigger"})
-                        yield from recursive_run(tmp_value['lick'])
+                start_history_len = len(self.lick_detector.history)  # type: ignore
+                while timer < response_window_start + tmp_value["total_duration"]:
+                    time.sleep(Config.RESPONSE_WINDOW_CHECKING_DT)
+                    timer += Config.RESPONSE_WINDOW_CHECKING_DT
+                    if len(self.lick_detector.history) > start_history_len:  # type: ignore
+                        uprint("-lick-")
+                        self.log_history.append(
+                            {"time": GetTime(), "details": "ResponseTrigger"}
+                        )
+                        yield from recursive_run(tmp_value["lick"])
                         break  # Exit loop after response
                 else:
                     # Executes only if the while loop completes without a 'break' (no response)
-                    uprint('-no-lick-')
-                    self.log_history.append({"time": GetTime(), "details": "ResponseTimeOut"})
+                    uprint("-no-lick-")
+                    self.log_history.append(
+                        {"time": GetTime(), "details": "ResponseTimeOut"}
+                    )
                     yield from recursive_run(tmp_value["no-lick"])
 
             # --- Hardware/Action Keywords ---
 
-            elif tmp_key in {"Buzzer", "VerticalPuff", "HorizontalPuff", "Blank", "Water", "NoWater"}:
+            elif tmp_key in {
+                "Buzzer",
+                "VerticalPuff",
+                "HorizontalPuff",
+                "Blank",
+                "Water",
+                "NoWater",
+            }:
                 # Activates a device for a specified duration
                 tmp_duration = get_value(tmp_value)
                 timer += tmp_duration
@@ -258,37 +324,42 @@ class TaskInstance:
                 yield f"{tmp_key}Off"
                 self.log_history.append({"time": GetTime(), "details": f"{tmp_key}Off"})
 
-            elif tmp_key in ("Pass", ):
+            elif tmp_key in ("Pass",):
                 pass
             else:
                 raise NotImplementedError(f"Json command {tmp_key} Not Implemented!")
 
         # Start the recursive execution from the top-level configuration
-        yield from recursive_run(self.module_json['task_content'])
+        yield from recursive_run(self.module_json["task_content"])
 
         self.log_history.append({"time": GetTime(), "details": "task end"})
-        yield 'RegisterBehavior'
-        cprint(f"Task ends", "B")
+        yield "RegisterBehavior"
+        cprint("Task ends", "B")
 
     def archive(self):
         tmp_snapshot = deepcopy(self.log_history)
         self.writer.write_multiple(tmp_snapshot)
-        self.log_history = self.log_history[len(tmp_snapshot):]
+        self.log_history = self.log_history[len(tmp_snapshot) :]
 
 
 def GetModules(module_name, exp_name, **kwargs):
-    for (dirpath, dirnames, filenames) in os.walk(TASK_DIR):
+    for dirpath, dirnames, filenames in os.walk(Config.TASK_DIR):
         for filename in filenames:
-            if filename[-5:] == ".json" and filename[:-5].casefold() == module_name.casefold():
+            if (
+                filename[-5:] == ".json"
+                and filename[:-5].casefold() == module_name.casefold()
+            ):
                 with open(path.join(dirpath, filename), "r") as file:
                     module_json = json.load(file)
-                    return TaskInstance(module_json=module_json, exp_name=exp_name, **kwargs)
-    raise FileNotFoundError(f"Module {module_name} Not Found in {TASK_DIR}!")
+                    return TaskInstance(
+                        module_json=module_json, exp_name=exp_name, **kwargs
+                    )
+    raise FileNotFoundError(f"Module {module_name} Not Found in {Config.TASK_DIR}!")
 
 
 if __name__ == "__main__":
-    x = GetModules("sat80active", "test_file")
+    x = GetModules("randPuff", "test_file")
 
     t0 = time.time()
     for _command in x.run():
-        print(time.time()-t0, _command)
+        print(time.time() - t0, _command)

@@ -1,9 +1,6 @@
 #!/bin/env python3
-import os
-import os.path as path
-import numpy as np
 import RPi.GPIO as GPIO
-from Config import *
+import Config as Config
 from RealTimeTaskManager import GetModules
 import argparse
 from utils.PinManager import Pin
@@ -14,13 +11,13 @@ from tools.Buzzer import GetBuzzer
 
 
 args = argparse.ArgumentParser()
-args.add_argument("-M", "-Module", "-m", "--M", "--m", type=str, help=f'Choose the module from Modules.')
+args.add_argument("-M", "-Module", "-m", "--M", "--m", type=str, help='Choose the module from Modules.')
 args.add_argument("-cam", "--cam", action='store_true', help="enable camera recording (require more disk space)")
 cfg = args.parse_args()
 print(cfg)
 
 
-print(f"Data saved at: {SAVE_DIR}")
+print(f"Data saved at: {Config.SAVE_DIR}")
 video_recording = cfg.cam
 if video_recording:
     print("-"*8, "camera recording... pay attention to disk space", "-"*8)
@@ -30,13 +27,13 @@ def main():
     """Set up all the pins and set their initial values"""
     GPIO.setmode(GPIO.BOARD)
 
-    water_pin = Pin(WATER_SOLENOID_PIN, GPIO.OUT)
-    airpuff_pin = Pin(AIRPUFF_SOLENOID_PIN, GPIO.OUT)
-    fake1_pin = Pin(FAKE1_SOLENOID_PIN, GPIO.OUT)
-    fake2_pin = Pin(FAKE2_SOLENOID_PIN, GPIO.OUT)
+    water_pin = Pin(Config.WATER_SOLENOID_PIN, GPIO.OUT)
+    airpuff_pin = Pin(Config.AIRPUFF_SOLENOID_PIN, GPIO.OUT)
+    fake1_pin = Pin(Config.FAKE1_SOLENOID_PIN, GPIO.OUT)
+    fake2_pin = Pin(Config.FAKE2_SOLENOID_PIN, GPIO.OUT)
 
-    microscope_pin = Pin(MICROSCOPE_TTL_PULSE, GPIO.OUT)
-    video_pin = Pin(VIDEO_TTL_PULSE, GPIO.OUT)
+    microscope_pin = Pin(Config.MICROSCOPE_TTL_PULSE, GPIO.OUT)
+    video_pin = Pin(Config.VIDEO_TTL_PULSE, GPIO.OUT)
 
     water_pin.output(GPIO.HIGH)
     airpuff_pin.output(GPIO.HIGH)
@@ -54,12 +51,12 @@ def main():
     buzzer_ = GetBuzzer()
     module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector)
 
-    with PiCameraRecorder(exp_name=exp_name, records=video_recording) as camera:
+    with PiCameraRecorder(exp_name =exp_name, records= video_recording) as camera:
         for _, command in enumerate(module.run()):
-            if command == 'ShortPulse':
+            if command== 'ShortPulse':
                 video_pin.hl_pulse()
             elif command == 'CheckCamera':
-                if video_recording:
+                if camera is not None:
                     camera.wait_recording()
             elif command == 'VerticalPuffOn':
                 airpuff_pin.output(GPIO.LOW)

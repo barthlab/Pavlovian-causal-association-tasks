@@ -1,18 +1,16 @@
 #!/bin/env python3
 
 """
-Encoder test script for raspberry pi
+Position Encoder interface for raspberry pi
 """
 
-import time
 import RPi.GPIO as GPIO
-import os
 import os.path as path
-from Config import *
+import Config as Config
 from utils.Utils import GetTime
 from utils.PinManager import Pin
 from utils.Logger import CSVFile
-from copy import copy, deepcopy
+from copy import deepcopy
 
 
 class PositionEncoder:
@@ -27,7 +25,7 @@ class PositionEncoder:
         self.callback = callback if callback is not None else self.register_history
         self.history = [[GetTime(), 0, None],]
 
-        self.writer = CSVFile(path.join(SAVE_DIR, f"LOCOMOTION_{exp_name}.csv"), ["time", "position", "direction"])
+        self.writer = CSVFile(path.join(Config.SAVE_DIR, f"LOCOMOTION_{exp_name}.csv"), ["time", "position", "direction"])
 
         self.leftPin.add_event_detect(GPIO.BOTH, callback=self.transition_occurred)
         self.rightPin.add_event_detect(GPIO.BOTH, callback=self.transition_occurred)
@@ -91,5 +89,5 @@ class PositionEncoder:
 
 
 def GetEncoder(exp_name):
-    return PositionEncoder(ENCODER_A_PIN, ENCODER_B_PIN, exp_name=exp_name)
+    return PositionEncoder(Config.ENCODER_A_PIN, Config.ENCODER_B_PIN, exp_name=exp_name)
 

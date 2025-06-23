@@ -1,0 +1,19 @@
+{
+  "task_name": "Random Air Puffs",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 100],
+      ["Trials", {
+        "total_duration": 400,
+        "trial_content": [
+          "Timeline",[["Choice", [
+              [0.8, ["VerticalPuff", 0.5]],
+              [0.2, ["Blank", 0.5]]
+            ]],
+            ["Sleep", [12, 18]]
+          ]]}],
+      ["Sleep", 100]
+    ]
+  ]
+}
