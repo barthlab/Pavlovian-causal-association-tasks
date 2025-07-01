@@ -3,13 +3,13 @@
   "task_rng": "default",
   "task_content": [
     "Timeline", [
-      ["Sleep", 10],
+      ["Sleep", 30],
       ["Trials", {
-        "total_duration": 600,
+        "total_duration": 540,
         "trial_content": [
           "Timeline",[
-            ["Buzzer", 0.1],
-            ["Sleep", 1.5],
+            ["Buzzer", 0.2],
+            ["Sleep", [1.2, 1.8]],
             ["Response", {
               "total_duration": 1,
               "lick": ["Choice", [
@@ -22,7 +22,7 @@
           ]
         ]
       }],
-      ["Sleep", 10]
+      ["Sleep", 30]
     ]
   ]
 }

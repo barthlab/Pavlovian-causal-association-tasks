@@ -358,7 +358,7 @@ def GetModules(module_name, exp_name, **kwargs):
 
 
 if __name__ == "__main__":
-    x = GetModules("randPuff", "test_file")
+    x = GetModules("sat80active", "test_file")
 
     t0 = time.time()
     for _command in x.run():

@@ -32,10 +32,11 @@ def check_puff():
     GPIO.setmode(GPIO.BOARD)
     check_pins = [
         Pin(Config.AIRPUFF_SOLENOID_PIN, GPIO.OUT),
-        Pin(Config.FAKE1_SOLENOID_PIN, GPIO.OUT),
-        Pin(Config.FAKE2_SOLENOID_PIN, GPIO.OUT),
-        # Pin(BUZZER_PIN, GPIO.OUT),
+        Pin(Config.FAKEPUFF_SOLENOID_PIN, GPIO.OUT),
+        Pin(Config.WATER_SOLENOID_PIN, GPIO.OUT),
+        Pin(Config.FAKEWATER_SOLENOID_PIN, GPIO.OUT),
     ]
+    pin_names = ["AirPuff", "FakePuff", "Water", "FakeWater"]
     for tmp_pin in check_pins:
         tmp_pin.output(GPIO.HIGH)
 
@@ -43,8 +44,8 @@ def check_puff():
     while time.time() - start_time < 600:
         time.sleep(10)
 
-        for i in check_pins:
-            print(f"Check Pin {i.pin_id}")
+        for i, name in zip(check_pins, pin_names):
+            print(f"Check Pin {name} at pin {i.pin_id}")
             i.output(GPIO.LOW)
             time.sleep(2)
             i.output(GPIO.HIGH)

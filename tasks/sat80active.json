@@ -3,33 +3,32 @@
   "task_rng": "default",
   "task_content": [
     "Timeline", [
-      ["Sleep", 10],
+      ["Sleep", 30],
       ["Trials", {
-        "total_duration": 600,
+        "total_duration": 540,
         "trial_content": [
           "Timeline",[
-            ["Buzzer", 0.1],
-            ["Sleep", 1.5],
+            ["Buzzer", 0.2],
+            ["Sleep", [1.2, 1.8]],
             ["Choice", [
               [0.8, ["Timeline", [
                 ["VerticalPuff", 0.5],
                 ["Sleep", 1.5],
                 ["Response", {
                   "total_duration": 1,
-                  "lick": ["Choice", [
-                    [0.8, ["Water", 0.02]],
-                    [0.2, ["NoWater", 0.02]]]],
+                  "lick": ["Water", 0.02],
                   "no-lick": ["Sleep", 2]
                 }]]]],
               [0.2, ["Timeline", [
                 ["Blank", 0.5],
-                ["Sleep", 1.5]
+                ["Sleep", 1.5],
+                ["NoWater", 0.02]
               ]]]]],
             ["Sleep", [8, 12]]
           ]
         ]
       }],
-      ["Sleep", 10]
+      ["Sleep", 30]
     ]
   ]
 }

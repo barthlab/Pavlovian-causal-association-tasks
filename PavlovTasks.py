@@ -29,16 +29,16 @@ def main():
 
     water_pin = Pin(Config.WATER_SOLENOID_PIN, GPIO.OUT)
     airpuff_pin = Pin(Config.AIRPUFF_SOLENOID_PIN, GPIO.OUT)
-    fake1_pin = Pin(Config.FAKE1_SOLENOID_PIN, GPIO.OUT)
-    fake2_pin = Pin(Config.FAKE2_SOLENOID_PIN, GPIO.OUT)
+    fakepuff_pin = Pin(Config.FAKEPUFF_SOLENOID_PIN, GPIO.OUT)
+    fakewater_pin = Pin(Config.FAKEWATER_SOLENOID_PIN, GPIO.OUT)
 
     microscope_pin = Pin(Config.MICROSCOPE_TTL_PULSE, GPIO.OUT)
     video_pin = Pin(Config.VIDEO_TTL_PULSE, GPIO.OUT)
 
     water_pin.output(GPIO.HIGH)
     airpuff_pin.output(GPIO.HIGH)
-    fake1_pin.output(GPIO.HIGH)
-    fake2_pin.output(GPIO.HIGH)
+    fakepuff_pin.output(GPIO.HIGH)
+    fakewater_pin.output(GPIO.HIGH)
 
     microscope_pin.output(GPIO.LOW)
     video_pin.output(GPIO.LOW)
@@ -64,15 +64,15 @@ def main():
             elif command == "VerticalPuffOff":
                 airpuff_pin.output(GPIO.HIGH)
             elif command == 'BlankOn':
-                fake1_pin.output(GPIO.LOW)
+                fakepuff_pin.output(GPIO.LOW)
                 microscope_pin.hl_pulse()
             elif command == "BlankOff":
-                fake1_pin.output(GPIO.HIGH)
+                fakepuff_pin.output(GPIO.HIGH)
             elif command == 'HorizontalPuffOn':
-                fake2_pin.output(GPIO.LOW)
+                fakepuff_pin.output(GPIO.LOW)
                 microscope_pin.hl_pulse()
             elif command == "HorizontalPuffOff":
-                fake2_pin.output(GPIO.HIGH)
+                fakepuff_pin.output(GPIO.HIGH)
 
             elif command == "BuzzerOn":
                 buzzer_.on()
@@ -84,9 +84,9 @@ def main():
             elif command == 'WaterOff':
                 water_pin.output(GPIO.HIGH)
             elif command == 'NoWaterOn':
-                fake1_pin.output(GPIO.LOW)
+                fakewater_pin.output(GPIO.LOW)
             elif command == 'NoWaterOff':
-                fake1_pin.output(GPIO.HIGH)
+                fakewater_pin.output(GPIO.HIGH)
 
             elif command == 'RegisterBehavior':
                 locomotion_encoder.archive()

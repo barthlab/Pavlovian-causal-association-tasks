@@ -3,12 +3,12 @@
   "task_rng": "halton",
   "task_content": [
     "Timeline", [
-      ["Sleep", 10],
+      ["Sleep", 30],
       ["Trials", {
-        "total_duration": 600,
+        "total_duration": 540,
         "trial_content": [
           "Timeline",[
-            ["Buzzer", 0.1],
+            ["Buzzer", 0.2],
             ["Sleep", [1.2, 1.8]],
             ["Choice", [
               [0.8, ["Water", 0.02]],
@@ -16,7 +16,7 @@
             ]],
             ["Sleep", [8, 12]]
           ]]}],
-      ["Sleep", 10]
+      ["Sleep", 30]
     ]
   ]
 }
