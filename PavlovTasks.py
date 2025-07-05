@@ -96,8 +96,8 @@ def main():
                 print(command)
                 raise NotImplementedError
 
-    # cleanup
-    GPIO.cleanup()
+    # # cleanup
+    # GPIO.cleanup()
 
 
 if "__main__" == __name__:
