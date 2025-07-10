@@ -1,3 +1,4 @@
+import time
 import RPi.GPIO as GPIO
 
 
@@ -27,6 +28,15 @@ class Pin:
     def hl_pulse(self):
         if self.pin_id is not None:
             GPIO.output(self.pin_id, GPIO.HIGH)
+            time.sleep(0.01)
+            GPIO.output(self.pin_id, GPIO.LOW)
+    
+    def h_pulse(self):
+        if self.pin_id is not None:
+            GPIO.output(self.pin_id, GPIO.HIGH)
+    
+    def l_pulse(self):
+        if self.pin_id is not None:
             GPIO.output(self.pin_id, GPIO.LOW)
 
     def get_input(self):

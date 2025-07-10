@@ -60,19 +60,22 @@ def main():
                     camera.wait_recording()
             elif command == 'VerticalPuffOn':
                 airpuff_pin.output(GPIO.LOW)
-                microscope_pin.hl_pulse()
+                microscope_pin.h_pulse()
             elif command == "VerticalPuffOff":
                 airpuff_pin.output(GPIO.HIGH)
+                microscope_pin.l_pulse()
             elif command == 'BlankOn':
                 fakepuff_pin.output(GPIO.LOW)
-                microscope_pin.hl_pulse()
+                microscope_pin.h_pulse()
             elif command == "BlankOff":
                 fakepuff_pin.output(GPIO.HIGH)
+                microscope_pin.l_pulse()
             elif command == 'HorizontalPuffOn':
                 fakepuff_pin.output(GPIO.LOW)
-                microscope_pin.hl_pulse()
+                microscope_pin.h_pulse()
             elif command == "HorizontalPuffOff":
                 fakepuff_pin.output(GPIO.HIGH)
+                microscope_pin.l_pulse()
 
             elif command == "BuzzerOn":
                 buzzer_.on()
