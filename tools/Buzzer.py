@@ -14,12 +14,12 @@ class Buzzer:
     def __init__(self, buzzer_pin: int, frequency: int):
         GPIO.setup(buzzer_pin, GPIO.OUT)
         if Config.PWM_FLAG:
-            self.buzzer = Pin(buzzer_pin, GPIO.OUT)
-            self.buzzer.output(GPIO.LOW)
-            self.pwm_flag = False
-        else:
             self.buzzer = GPIO.PWM(buzzer_pin, frequency)
             self.pwm_flag = True
+        else:
+            self.buzzer = Pin(buzzer_pin, GPIO.OUT)
+            self.buzzer.output(GPIO.HIGH)
+            self.pwm_flag = False
         self.on()
         time.sleep(0.1)
         self.stop()
@@ -30,13 +30,13 @@ class Buzzer:
         if self.pwm_flag:
             self.buzzer.start(50)
         else:
-            self.buzzer.output(GPIO.HIGH)
+            self.buzzer.output(GPIO.LOW)
 
     def stop(self):
         if self.pwm_flag:
             self.buzzer.stop()
         else:
-            self.buzzer.output(GPIO.LOW)
+            self.buzzer.output(GPIO.HIGH)
 
 
 def GetBuzzer(*args):
