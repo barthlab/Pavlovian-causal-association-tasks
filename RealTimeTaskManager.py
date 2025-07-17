@@ -272,6 +272,7 @@ class TaskInstance:
                 while timer < trials_session_start + tmp_value["total_duration"]:
                     trial_cnt += 1
                     cprint(f"\nTrial #{trial_cnt}", "Y")
+                    yield "TrialPulse"
                     yield from recursive_run(tmp_value["trial_content"])
                     yield "RegisterBehavior"  # Save behavior data after each trial
 

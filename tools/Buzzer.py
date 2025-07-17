@@ -16,13 +16,18 @@ class Buzzer:
         if Config.PWM_FLAG:
             self.buzzer = GPIO.PWM(buzzer_pin, frequency)
             self.pwm_flag = True
+            print("Training is now using PWM Buzzer")
         else:
             self.buzzer = Pin(buzzer_pin, GPIO.OUT)
             self.buzzer.output(GPIO.HIGH)
             self.pwm_flag = False
-        self.on()
-        time.sleep(0.1)
-        self.stop()
+            print("Training is now using Digital Buzzer")
+
+        # Test the PWM buzzer
+        if self.pwm_flag:
+            self.on()
+            time.sleep(0.1)
+            self.stop()
 
     def on(self):
         # Start PWM: pwm.start(duty_cycle)
