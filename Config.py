@@ -20,7 +20,7 @@ VIDEO_TTL_PULSE = 12
 
 BUZZER_PIN = 33  # make sure it's PWM pin
 LICKPORT_PIN = 29
-
+PWM_FLAG = False
 
 # Data Directory
 SAVE_DIR = path.join(path.dirname(__file__), "data")

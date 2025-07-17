@@ -13,7 +13,7 @@ from utils.PinManager import Pin
 class Buzzer:
     def __init__(self, buzzer_pin: int, frequency: int):
         GPIO.setup(buzzer_pin, GPIO.OUT)
-        if buzzer_pin != 33:
+        if Config.PWM_FLAG:
             self.buzzer = Pin(buzzer_pin, GPIO.OUT)
             self.buzzer.output(GPIO.LOW)
             self.pwm_flag = False
