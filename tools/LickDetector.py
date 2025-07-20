@@ -22,15 +22,11 @@ class LickDetector:
 
         self.lickpin.add_event_detect(GPIO.FALLING, callback=self.register_history)
 
-    def register_history(self, channel):
-        cur_char = len(self.history) % 10
-        if cur_char ==0:
+    def register_history(self, channel):        
+        current_state = GPIO.input(channel)
+        if current_state == GPIO.LOW:
             print(":P", end='', flush=True)
-        # else:
-        #     sys.stdout.write("\b")
-        #     print(cur_char, end='', flush=True)
-
-        self.history.append([GetTime(),])
+            self.history.append([GetTime(),])
 
     def archive(self):
         tmp_snapshot = deepcopy(self.history)
