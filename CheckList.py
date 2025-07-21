@@ -10,6 +10,7 @@ import socket
 from tools.LickDetector import GetDetector
 from tools.PositionRecorder import GetEncoder
 from tools.Buzzer import GetBuzzer
+from tools.Relay import Relay
 
 
 args = argparse.ArgumentParser()
@@ -31,14 +32,12 @@ def check_puff():
 
     GPIO.setmode(GPIO.BOARD)
     check_pins = [
-        Pin(Config.AIRPUFF_SOLENOID_PIN, GPIO.OUT),
-        Pin(Config.FAKEPUFF_SOLENOID_PIN, GPIO.OUT),
-        Pin(Config.WATER_SOLENOID_PIN, GPIO.OUT),
-        Pin(Config.FAKEWATER_SOLENOID_PIN, GPIO.OUT),
+        Relay(Config.AIRPUFF_SOLENOID_PIN),
+        Relay(Config.FAKEPUFF_SOLENOID_PIN),
+        Relay(Config.WATER_SOLENOID_PIN),
+        Relay(Config.FAKEWATER_SOLENOID_PIN),
     ]
     pin_names = ["AirPuff", "FakePuff", "Water", "FakeWater"]
-    for tmp_pin in check_pins:
-        tmp_pin.output(GPIO.HIGH)
 
     # main loop
     while time.time() - start_time < 600:
@@ -46,9 +45,9 @@ def check_puff():
 
         for i, name in zip(check_pins, pin_names):
             print(f"Check Pin {name} at pin {i.pin_id}")
-            i.output(GPIO.LOW)
+            i.on()
             time.sleep(2)
-            i.output(GPIO.HIGH)
+            i.off()
             time.sleep(5)
     GPIO.cleanup()
 
@@ -56,17 +55,16 @@ def check_puff():
 def check_water():
     GPIO.setmode(GPIO.BOARD)
     WATER_DURATION = 0.05
-    water_pin = Pin(Config.WATER_SOLENOID_PIN, GPIO.OUT)
-    water_pin.output(GPIO.HIGH)
+    water_pin = Relay(Config.WATER_SOLENOID_PIN)
 
     drain_mode = input(
         "Enter anything to enable always-open mode, otherwise feed mode: "
     )
     if drain_mode:
         print("Always Open")
-        water_pin.output(GPIO.LOW)
+        water_pin.on()
         _ = input("Press Enter to exit: ")
-        water_pin.output(GPIO.HIGH)
+        water_pin.off()
     else:
         water_duration = input(
             f"Enter water duration, otherwise adopt default setup ({WATER_DURATION}s): "
@@ -78,9 +76,9 @@ def check_water():
                 "Press Enter to drain the water (or type in anything stop the loop):"
             )
             if not user_input:
-                water_pin.output(GPIO.LOW)
+                water_pin.on()
                 time.sleep(water_duration)
-                water_pin.output(GPIO.HIGH)
+                water_pin.off()
             else:
                 break
     GPIO.cleanup()
