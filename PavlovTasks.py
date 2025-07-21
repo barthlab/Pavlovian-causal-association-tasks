@@ -3,6 +3,7 @@ import RPi.GPIO as GPIO
 import Config as Config
 from RealTimeTaskManager import GetModules
 import argparse
+from tools.Relay import Relay
 from utils.PinManager import Pin
 from tools.Camera import PiCameraRecorder
 from tools.LickDetector import GetDetector
@@ -27,18 +28,13 @@ def main():
     """Set up all the pins and set their initial values"""
     GPIO.setmode(GPIO.BOARD)
 
-    water_pin = Pin(Config.WATER_SOLENOID_PIN, GPIO.OUT)
-    airpuff_pin = Pin(Config.AIRPUFF_SOLENOID_PIN, GPIO.OUT)
-    fakepuff_pin = Pin(Config.FAKEPUFF_SOLENOID_PIN, GPIO.OUT)
-    fakewater_pin = Pin(Config.FAKEWATER_SOLENOID_PIN, GPIO.OUT)
+    water_pin = Relay(Config.WATER_SOLENOID_PIN)
+    airpuff_pin = Relay(Config.AIRPUFF_SOLENOID_PIN)
+    fakepuff_pin = Relay(Config.FAKEPUFF_SOLENOID_PIN)
+    fakewater_pin = Relay(Config.FAKEWATER_SOLENOID_PIN)
 
     microscope_pin = Pin(Config.MICROSCOPE_TTL_PULSE, GPIO.OUT)
     video_pin = Pin(Config.VIDEO_TTL_PULSE, GPIO.OUT)
-
-    water_pin.output(GPIO.HIGH)
-    airpuff_pin.output(GPIO.HIGH)
-    fakepuff_pin.output(GPIO.HIGH)
-    fakewater_pin.output(GPIO.HIGH)
 
     microscope_pin.output(GPIO.LOW)
     video_pin.output(GPIO.LOW)
@@ -61,17 +57,17 @@ def main():
             elif command == "TrialPulse":
                 microscope_pin.hl_pulse()
             elif command == 'VerticalPuffOn':
-                airpuff_pin.output(GPIO.LOW)
+                airpuff_pin.on()
             elif command == "VerticalPuffOff":
-                airpuff_pin.output(GPIO.HIGH)
+                airpuff_pin.off()
             elif command == 'BlankOn':
-                fakepuff_pin.output(GPIO.LOW)
+                fakepuff_pin.on()
             elif command == "BlankOff":
-                fakepuff_pin.output(GPIO.HIGH)
+                fakepuff_pin.off()
             elif command == 'HorizontalPuffOn':
-                fakepuff_pin.output(GPIO.LOW)
+                fakepuff_pin.on()
             elif command == "HorizontalPuffOff":
-                fakepuff_pin.output(GPIO.HIGH)
+                fakepuff_pin.off()
 
             elif command == "BuzzerOn":
                 buzzer_.on()
@@ -79,13 +75,13 @@ def main():
                 buzzer_.stop()
 
             elif command == 'WaterOn':
-                water_pin.output(GPIO.LOW)
+                water_pin.on()
             elif command == 'WaterOff':
-                water_pin.output(GPIO.HIGH)
+                water_pin.off()
             elif command == 'NoWaterOn':
-                fakewater_pin.output(GPIO.LOW)
+                fakewater_pin.on()
             elif command == 'NoWaterOff':
-                fakewater_pin.output(GPIO.HIGH)
+                fakewater_pin.off()
 
             elif command == 'RegisterBehavior':
                 locomotion_encoder.archive()

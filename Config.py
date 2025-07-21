@@ -20,7 +20,13 @@ VIDEO_TTL_PULSE = 12
 
 BUZZER_PIN = 33  # make sure it's PWM pin
 LICKPORT_PIN = 29
+
+
 PWM_FLAG = False
+print("Training is now using PWM Buzzer" if PWM_FLAG else "Training is now using non-PWM Buzzer")
+
+HIGH_LEVEL_TRIGGER = False
+print("Training is now using High Level Trigger" if HIGH_LEVEL_TRIGGER else "Training is now using Low Level Trigger")
 
 # Data Directory
 SAVE_DIR = path.join(path.dirname(__file__), "data")
