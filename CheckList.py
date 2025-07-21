@@ -2,7 +2,6 @@ import RPi.GPIO as GPIO
 import Config as Config
 import argparse
 import time
-from utils.PinManager import Pin
 from flask import Flask, Response
 import io
 import picamera
@@ -44,7 +43,7 @@ def check_puff():
         time.sleep(10)
 
         for i, name in zip(check_pins, pin_names):
-            print(f"Check Pin {name} at pin {i.pin_id}")
+            print(f"Check Pin {name} at pin {i.relaypin.pin_id}")
             i.on()
             time.sleep(2)
             i.off()
