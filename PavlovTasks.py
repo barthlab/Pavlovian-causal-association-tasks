@@ -23,6 +23,11 @@ video_recording = cfg.cam
 if video_recording:
     print("-"*8, "camera recording... pay attention to disk space", "-"*8)
 
+if Config.UNIVERSAL_WATER_VOLUME is not None:
+    print(f"Universal water volume is set to {Config.UNIVERSAL_WATER_VOLUME}s.")
+else:
+    print("Universal water volume is turned off.")
+    
 
 def main():
     """Set up all the pins and set their initial values"""

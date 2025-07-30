@@ -308,12 +308,24 @@ class TaskInstance:
             # --- Hardware/Action Keywords ---
 
             elif tmp_key in {
+                "Water",
+                "NoWater",
+            }:
+                # Activates water solenoid for a specified duration
+                tmp_duration = get_value(tmp_value) if Config.UNIVERSAL_WATER_VOLUME is None else Config.UNIVERSAL_WATER_VOLUME
+                timer += tmp_duration
+                uprint(f"-{tmp_key}-")
+                self.log_history.append({"time": GetTime(), "details": f"{tmp_key}On"})
+                yield f"{tmp_key}On"
+                time.sleep(tmp_duration)
+                yield f"{tmp_key}Off"
+                self.log_history.append({"time": GetTime(), "details": f"{tmp_key}Off"})
+
+            elif tmp_key in {
                 "Buzzer",
                 "VerticalPuff",
                 "HorizontalPuff",
                 "Blank",
-                "Water",
-                "NoWater",
             }:
                 # Activates a device for a specified duration
                 tmp_duration = get_value(tmp_value)

@@ -37,5 +37,5 @@ os.makedirs(SAVE_DIR, exist_ok=True)
 # Response Window
 RESPONSE_WINDOW_CHECKING_DT = 0.2
 PURETONE_HZ = 4000
-
+UNIVERSAL_WATER_VOLUME = None  # seconds, turn off by setting to None
 
