@@ -280,6 +280,7 @@ class TaskInstance:
                     trial_cnt += 1
                     cprint(f"\nTrial #{trial_cnt}", "Y")
                     yield "TrialPulse"
+                    self.log_history.append({"time": GetTime(), "details": "TrialOn"})
                     yield from recursive_run(tmp_value["trial_content"])
                     yield "RegisterBehavior"  # Save behavior data after each trial
 
