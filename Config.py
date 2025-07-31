@@ -37,5 +37,10 @@ os.makedirs(SAVE_DIR, exist_ok=True)
 # Response Window
 RESPONSE_WINDOW_CHECKING_DT = 0.2
 PURETONE_HZ = 4000
+
+# Universal Water Volume
 UNIVERSAL_WATER_VOLUME = None  # seconds, turn off by setting to None
+
+# Random Number Generator
+RANDOMSEED = None  # Warning!!!!!!! turn on RANDOMSEED will make the experiment deterministic
 

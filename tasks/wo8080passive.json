@@ -1,6 +1,6 @@
 {
   "task_name": "water omission 80% puff 64% of water passive",
-  "task_rng": "default",
+  "task_rng": "sobol",
   "task_content": [
     "Timeline", [
       ["Sleep", 30],

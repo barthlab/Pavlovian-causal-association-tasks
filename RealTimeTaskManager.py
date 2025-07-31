@@ -7,7 +7,8 @@ from copy import deepcopy
 from typing import Any, List, Tuple
 from utils.Logger import CSVFile
 from utils.Utils import tab_block, cprint, uprint, GetTime
-import Config as Config
+import Config
+from utils.RNG import NumberGenerator, get_short_hash
 
 
 class TaskInstance:
@@ -17,8 +18,14 @@ class TaskInstance:
         self.module_json = module_json
         self.task_name = self.module_json["task_name"]
 
+        # Random number generator
+        self.rng = NumberGenerator(self.module_json.get("task_rng", "default").lower())
+        self.stream_dict = {}
+
+        # Lick detector
         self.lick_detector = lick_detector
 
+        # Log file
         self.writer = CSVFile(
             path.join(Config.SAVE_DIR, f"TIMELINE_{exp_name}.csv"), ["time", "details"]
         )
@@ -26,7 +33,7 @@ class TaskInstance:
 
     def vis(self):
         """Generates and prints an ASCII art representation of the task structure."""
-        print(self.module_json["task_name"])
+        print(f"Task Name: {self.task_name}")
 
         def recursive_paint(tmp_list: Tuple[str, Any]) -> List[str]:
             """
@@ -278,9 +285,15 @@ class TaskInstance:
 
             elif tmp_key == "Choice":
                 # Probabilistically selects and executes one of several branches
+                choice_hash_key = get_short_hash(tmp_value)
+                stream_id = self.stream_dict.setdefault(choice_hash_key, len(self.stream_dict))
+                rx = self.rng.random_from_stream(stream_id)
+
                 probs = [tmp_choice[0] for tmp_choice in tmp_value]
                 assert sum(probs) == 1.0, "Probabilities in 'Choice' must sum to 1."
-                choice_index = np.random.choice(len(tmp_value), p=probs)
+                choice_index = np.searchsorted(np.cumsum(probs), rx)
+                
+                print(f"Choice: {rx}, {stream_id}, {probs}, {choice_index}")
                 yield from recursive_run(tmp_value[int(choice_index)][1])
 
             elif tmp_key == "Response":
