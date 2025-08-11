@@ -94,6 +94,7 @@ def main():
                 locomotion_encoder.archive()
                 lick_detector.archive()
                 module.archive()
+                temp_sensor.archive()
             else:
                 print(command)
                 raise NotImplementedError

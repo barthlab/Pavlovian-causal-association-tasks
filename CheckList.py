@@ -170,23 +170,36 @@ def check_buzzer():
     GPIO.cleanup()
 
 def check_temperature():
-    """Initializes the temp sensor and prints readings periodically."""
-    exp_name = input("Experiment ID: ")
+    """Initializes the temp sensor and prints live readings from its history."""
+    exp_name = input("Experiment ID (for logging): ")
     sensor = TemperatureSensor(exp_name)
 
     if not sensor.sensor_found:
         print("Checklist cannot proceed as sensor was not initialized.")
         return
     
-    start_time = time.time()
+    print("Starting temperature sensor check. Press Ctrl+C to stop.")
+    
+    last_history_len = 0
+    # The 'with' statement handles starting and stopping the sensor's background thread
     with sensor:
-        while time.time() - start_time < 600:
-            celsius, fahrenheit = sensor.read_temp()
-            if celsius is not None:
-                print(f"Reading at {time.time() - start_time}: {celsius:.2f}°C / {fahrenheit:.2f}°F")
-            else:
-                print("Reading: Failed to get a valid reading.")
-            time.sleep(1)
+        try:
+            while True:
+                # If the history list has grown, print the new readings
+                if len(sensor.history) > last_history_len:
+                    new_readings = sensor.history[last_history_len:]
+                    for reading in new_readings:
+                        # Reading format is [timestamp, celsius, fahrenheit]
+                        _, celsius, fahrenheit = reading
+                        print(f"Live Reading: {celsius:.2f}°C / {fahrenheit:.2f}°F")
+                    last_history_len += len(new_readings)
+                time.sleep(1) # Wait a second before checking for new readings
+        except KeyboardInterrupt:
+            print("\nStopping temperature check.")
+    
+    print("Temperature check complete. Log file has been saved.")
+    # The sensor's __exit__ method handles the final archive call automatically.
+
 
 
 if __name__ == "__main__":
