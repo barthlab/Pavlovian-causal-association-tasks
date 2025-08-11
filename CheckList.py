@@ -190,8 +190,8 @@ def check_temperature():
                     new_readings = sensor.history[last_history_len:]
                     for reading in new_readings:
                         # Reading format is [timestamp, celsius, fahrenheit]
-                        _, celsius, fahrenheit = reading
-                        print(f"Live Reading: {celsius:.2f}°C / {fahrenheit:.2f}°F")
+                        tmp_t, celsius, fahrenheit = reading
+                        print(f"Live Reading at {tmp_t:.2f}s: {celsius:.2f}°C / {fahrenheit:.2f}°F")
                     last_history_len += len(new_readings)
                 time.sleep(1) # Wait a second before checking for new readings
         except KeyboardInterrupt:
