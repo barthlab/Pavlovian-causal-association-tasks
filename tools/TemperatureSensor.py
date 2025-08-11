@@ -123,7 +123,7 @@ class TemperatureSensor:
             except queue.Empty:
                 continue
 
-    def start(self, interval: float = 1.0):
+    def start(self, interval: float = 0.2):
         """Starts background threads if the sensor was found."""
         if not self.sensor_found or self._is_running:
             return
