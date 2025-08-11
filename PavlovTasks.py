@@ -16,12 +16,13 @@ from tools.Camera import PiCameraRecorder
 from tools.LickDetector import GetDetector
 from tools.PositionRecorder import GetEncoder
 from tools.Buzzer import GetBuzzer
-from tools.TemperatureSensor import GetSensor
+from tools.TemperatureSensor import TemperatureSensor
 
 
 args = argparse.ArgumentParser()
 args.add_argument("-M", "-Module", "-m", "--M", "--m", type=str, help='Choose the module from Modules.')
 args.add_argument("-cam", "--cam", action='store_true', help="enable camera recording (require more disk space)")
+args.add_argument("-temp", "--temp", action='store_true', help="enable temperature recording")
 cfg = args.parse_args()
 print(cfg)
 
@@ -49,6 +50,8 @@ def main():
     airpuff_pin = Relay(Config.AIRPUFF_SOLENOID_PIN)
     fakepuff_pin = Relay(Config.FAKEPUFF_SOLENOID_PIN)
     fakewater_pin = Relay(Config.FAKEWATER_SOLENOID_PIN)
+    peltier_left_pin = Relay(Config.PELTIER_LEFT_PIN)
+    peltier_right_pin = Relay(Config.PELTIER_RIGHT_PIN)
 
     microscope_pin = Pin(Config.MICROSCOPE_TTL_PULSE, GPIO.OUT)
     video_pin = Pin(Config.VIDEO_TTL_PULSE, GPIO.OUT)
@@ -62,10 +65,9 @@ def main():
     lick_detector = GetDetector(exp_name=exp_name)
     locomotion_encoder = GetEncoder(exp_name=exp_name)
     buzzer_ = GetBuzzer()
-    temp_sensor = GetSensor(exp_name=exp_name)
     module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector)
 
-    with PiCameraRecorder(exp_name=exp_name, records=video_recording) as camera, temp_sensor:
+    with PiCameraRecorder(exp_name=exp_name, records=video_recording) as camera, TemperatureSensor(exp_name=exp_name, records=cfg.temp) as temp_sensor:
         for _, command in enumerate(module.run()):
             if command== 'ShortPulse':
                 video_pin.hl_pulse()
@@ -86,6 +88,20 @@ def main():
                 fakepuff_pin.on()
             elif command == "HorizontalPuffOff":
                 fakepuff_pin.off()
+            elif command == 'PeltierLeftOn':
+                peltier_left_pin.on()
+            elif command == "PeltierLeftOff":
+                peltier_left_pin.off()
+            elif command == 'PeltierRightOn':
+                peltier_right_pin.on()
+            elif command == "PeltierRightOff":
+                peltier_right_pin.off()
+            elif command == 'PeltierBothOn':
+                peltier_left_pin.on()
+                peltier_right_pin.on()
+            elif command == "PeltierBothOff":
+                peltier_left_pin.off()
+                peltier_right_pin.off()
 
             elif command == "BuzzerOn":
                 buzzer_.on()

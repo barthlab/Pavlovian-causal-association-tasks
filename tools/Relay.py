@@ -2,6 +2,7 @@
 
 """Relay interface for Raspberry Pi GPIO control."""
 
+from typing import Optional
 import RPi.GPIO as GPIO
 import Config as Config
 from utils.PinManager import Pin
@@ -14,7 +15,7 @@ class Relay:
     configuration settings. Automatically initializes to off state.
     """
 
-    def __init__(self, relaypin: int):
+    def __init__(self, relaypin: Optional[int]):
         """Initialize relay with specified GPIO pin.
 
         Args:

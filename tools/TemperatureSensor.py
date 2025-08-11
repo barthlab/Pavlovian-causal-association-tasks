@@ -34,15 +34,21 @@ class TemperatureSensor:
     _DEVICE_FILE = 'w1_slave'
     _TEMP_REGEX = re.compile(r"t=(\d+)")
 
-    def __init__(self, exp_name: str):
+    def __init__(self, exp_name: str, records: bool = True):
         """Initialize temperature sensor with experiment name.
-
-        If no sensor is found, prints a warning and disables all functions.
 
         Args:
             exp_name: Experiment name for data file naming.
+            records: Whether to actually record temperature data (False for testing).
         """
         self.sensor_found = False
+        self.records = records
+
+        # If recording is disabled, skip all initialization
+        if not records:
+            self._initialize_disabled_state()
+            return
+
         self._load_kernel_modules()
 
         try:
@@ -55,7 +61,8 @@ class TemperatureSensor:
             self.device_file = os.path.join(device_folders[0], self._DEVICE_FILE)
         except (StopIteration, FileNotFoundError):
             print("Warning: DS18B20 sensor not found. Temperature will not be recorded.")
-            return # Exit init, self.sensor_found remains False
+            self._initialize_disabled_state()
+            return
 
         # --- Sensor was found, proceed with setup ---
         self.sensor_found = True
@@ -67,7 +74,13 @@ class TemperatureSensor:
         self._thread = None
         self._is_running = False
 
-        print(f"Temperature sensor initialized. Logging to {self.csv_path}.")
+    def _initialize_disabled_state(self):
+        """Initialize sensor in disabled state for testing or when hardware unavailable."""
+        self.sensor_found = False
+        self.history: List[List] = []
+        self._stop_event = threading.Event()
+        self._thread = None
+        self._is_running = False
 
     @staticmethod
     def _load_kernel_modules():
@@ -89,8 +102,8 @@ class TemperatureSensor:
         try:
             with open(self.device_file, 'r') as f:
                 return f.read()
-        except IOError as e:
-            print(f"Warning: could not read sensor file: {e}.")
+        except IOError:
+            # Silently fail on read errors to reduce console noise
             return None
 
     def _read_temp(self) -> Optional[List]:
@@ -108,7 +121,7 @@ class TemperatureSensor:
                 temp_f = temp_c * (9.0 / 5.0) + 32.0
                 return [GetTime(), temp_c, temp_f]
 
-        print("Warning: failed to read valid temperature.")
+        # Silently fail on temperature read errors to reduce console noise
         return None
 
     def _recorder_thread(self):
@@ -137,14 +150,12 @@ class TemperatureSensor:
         self._thread = threading.Thread(target=self._recorder_thread, daemon=True)
         self._thread.start()
         self._is_running = True
-        print("Started temperature recording.")
 
     def stop(self):
         """Stop background thread and save any remaining data."""
         if not self.sensor_found or not self._is_running:
             return
 
-        print("Stopping temperature recording thread...")
         self._stop_event.set()
         if self._thread:
             self._thread.join()
@@ -152,7 +163,6 @@ class TemperatureSensor:
         self._is_running = False
         # Perform one final archive to save any data collected before stopping
         self.archive()
-        print("Temperature recording stopped.")
 
     def __enter__(self):
         """Context manager entry point: start recording.
@@ -172,15 +182,4 @@ class TemperatureSensor:
             exc_tb: Exception traceback if an exception occurred.
         """
         self.stop()
-
-
-def GetSensor(exp_name: str) -> TemperatureSensor:
-    """Create temperature sensor instance with default configuration.
-
-    Args:
-        exp_name: Experiment name for data file naming.
-
-    Returns:
-        Configured TemperatureSensor instance.
-    """
-    return TemperatureSensor(exp_name=exp_name)
+        return None

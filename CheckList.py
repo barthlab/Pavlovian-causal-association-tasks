@@ -29,7 +29,8 @@ args.add_argument(
     "-wheel", "--wheel", action="store_true", help="check rotatory encoder"
 )
 args.add_argument("-buzzer", "--buzzer", action="store_true", help="check buzzer")
-args.add_argument("-temp", "--temp", action="store_true", help="check temperature sensor")
+args.add_argument("-temperature", "--temperature", action="store_true", help="check temperature sensor")
+args.add_argument("-peltier", "--peltier", action="store_true", help="check peltier")
 cfg = args.parse_args()
 print(cfg)
 
@@ -99,6 +100,37 @@ def check_water():
                 water_pin.off()
             else:
                 break
+    GPIO.cleanup()
+
+
+def check_peltier():
+    """Test peltier cooling system.
+    """
+    GPIO.setmode(GPIO.BOARD)
+    check_pins = [
+        Relay(Config.PELTIER_LEFT_PIN),
+        Relay(Config.PELTIER_RIGHT_PIN),
+    ]
+    pin_names = ["PeltierLeft", "PeltierRight"]
+    
+    PELTIER_DURATION = 0.5
+    on_duration = input(f"Enter on duration (in seconds), otherwise adopt default setup ({PELTIER_DURATION}s): ")
+    on_duration = float(on_duration) if on_duration else PELTIER_DURATION
+
+    print(f"Adopted on duration: {on_duration}s.")
+    while True:
+        user_input = input(
+            "Press Enter to test peltier (or type anything to stop): "
+        )
+        if user_input:
+            break
+        for i, name in zip(check_pins, pin_names):
+            print(f"Testing pin {name} at GPIO pin {i.relaypin.pin_id}.")
+            i.on()
+            time.sleep(on_duration)
+            i.off()
+            time.sleep(5)
+            print(f"Testing pin {name} at GPIO pin {i.relaypin.pin_id} complete.")
     GPIO.cleanup()
 
 
@@ -267,6 +299,9 @@ if __name__ == "__main__":
     elif cfg.buzzer:
         print("Checking buzzer...")
         check_buzzer()
-    elif cfg.temp:
+    elif cfg.temperature:
         print("Checking temperature sensor...")
         check_temperature()
+    elif cfg.peltier:
+        print("Checking peltier...")
+        check_peltier()

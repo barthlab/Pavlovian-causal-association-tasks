@@ -212,6 +212,9 @@ class TaskInstance:
                 "Buzzer",
                 "VerticalPuff",
                 "HorizontalPuff",
+                "PeltierLeft",
+                "PeltierRight",
+                "PeltierBoth",
                 "Blank",
                 "Water",
                 "NoWater",
@@ -319,7 +322,7 @@ class TaskInstance:
                 assert sum(probs) == 1.0, "Probabilities in 'Choice' must sum to 1."
                 choice_index = np.searchsorted(np.cumsum(probs), rx)
                 
-                print(f"Choice: {rx}, {stream_id}, {probs}, {choice_index}")
+                # print(f"Choice: {rx:.3f}, Stream {stream_id}, Compared to {probs}, Chose {choice_index}th option.")
                 yield from recursive_run(tmp_value[int(choice_index)][1])
 
             elif tmp_key == "Response":
@@ -365,6 +368,9 @@ class TaskInstance:
                 "VerticalPuff",
                 "HorizontalPuff",
                 "Blank",
+                "PeltierLeft",
+                "PeltierRight",
+                "PeltierBoth",
             }:
                 # Activates a device for a specified duration
                 tmp_duration = get_value(tmp_value)
@@ -427,7 +433,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("WO8080passive", "test_file")
+    x = GetModules("PelACC50", "test_file")
 
     t0 = time.time()
     for _command in x.run():
