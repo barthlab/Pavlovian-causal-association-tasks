@@ -13,7 +13,7 @@ import subprocess
 import threading
 import time
 from pathlib import Path
-from typing import Optional, Tuple
+from typing import Optional, Tuple, Union
 
 # Assuming these are your existing utility modules
 import Config as Config
@@ -82,7 +82,7 @@ class TemperatureSensor:
             logging.warning(f"Could not read sensor file: {e}")
             return None
 
-    def read_temp(self, retries: int = 3, delay: float = 0.2) -> Tuple[float, float] | Tuple[None, None]:
+    def read_temp(self, retries: int = 3, delay: float = 0.2) -> Union[Tuple[float, float], Tuple[None, None]]:
         """
         Reads and parses the temperature. Returns None if the sensor was not
         found or if the read fails.
