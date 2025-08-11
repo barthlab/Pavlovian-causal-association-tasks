@@ -1,13 +1,19 @@
+"""Configuration settings for Pavlovian causal association tasks.
+
+This module contains all hardware pin assignments, camera settings, timing
+parameters, and other configuration constants used throughout the system.
+"""
+
 import os
 import os.path as path
 
 
-# Camera Params
+# Camera Parameters
 CAMERA_RESOLUTION = (1080, 768)
 FRAME_RATE = 30
 
 
-# Raspberry Pi pin idx
+# Raspberry Pi GPIO Pin Assignments
 AIRPUFF_SOLENOID_PIN = 32
 FAKEPUFF_SOLENOID_PIN = 36
 WATER_SOLENOID_PIN = 38
@@ -22,25 +28,26 @@ BUZZER_PIN = 33  # make sure it's PWM pin
 LICKPORT_PIN = 29
 
 
+# Hardware Configuration Flags
 PWM_FLAG = False
-print("Training is now using PWM Buzzer" if PWM_FLAG else "Training is now using non-PWM Buzzer")
+print("Training is now using PWM buzzer." if PWM_FLAG else "Training is now using non-PWM buzzer.")
 
 HIGH_LEVEL_TRIGGER = False
-print("Training is now using High Level Trigger" if HIGH_LEVEL_TRIGGER else "Training is now using Low Level Trigger")
+print("Training is now using high level trigger." if HIGH_LEVEL_TRIGGER else "Training is now using low level trigger.")
 
-# Data Directory
+# Data Directory Configuration
 SAVE_DIR = path.join(path.dirname(__file__), "data")
 TASK_DIR = path.join(path.dirname(__file__), "tasks")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
-# Response Window
+# Timing Parameters
 RESPONSE_WINDOW_CHECKING_DT = 0.2
 PURETONE_HZ = 4000
 
-# Universal Water Volume
+# Water Delivery Configuration
 UNIVERSAL_WATER_VOLUME = None  # seconds, turn off by setting to None
 
-# Random Number Generator
-RANDOMSEED = None  # Warning!!!!!!! turn on RANDOMSEED will make the experiment deterministic
+# Random Number Generator Configuration
+RANDOMSEED = None  # Warning: setting RANDOMSEED will make experiments deterministic
 

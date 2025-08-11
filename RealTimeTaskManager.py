@@ -1,3 +1,10 @@
+"""Real-time task manager for behavioral experiments.
+
+This module provides the core task execution engine for Pavlovian causal
+association experiments. It handles task visualization, execution timing,
+and data logging while supporting complex nested task structures.
+"""
+
 import time
 import os
 import os.path as path
@@ -12,7 +19,20 @@ from utils.RNG import NumberGenerator, get_short_hash
 
 
 class TaskInstance:
-    def __init__(self, module_json, exp_name, lick_detector=None):
+    """Task execution instance with visualization and logging capabilities.
+
+    Manages the execution of behavioral tasks defined in JSON format,
+    providing ASCII visualization of task structure and real-time execution
+    with precise timing and data logging.
+    """
+    def __init__(self, module_json: dict, exp_name: str, lick_detector=None):
+        """Initialize task instance with configuration and logging.
+
+        Args:
+            module_json: Task configuration dictionary loaded from JSON file.
+            exp_name: Experiment name for data file naming.
+            lick_detector: Optional lick detector instance for behavioral monitoring.
+        """
         self.log_history = []
 
         self.module_json = module_json
@@ -32,7 +52,12 @@ class TaskInstance:
         self.vis()
 
     def vis(self):
-        """Generates and prints an ASCII art representation of the task structure."""
+        """Generate and print ASCII art representation of the task structure.
+
+        Creates a visual representation of the task flow including timelines,
+        choices, and response windows. This method preserves the existing
+        display format for user task visualization.
+        """
         print(f"Task Name: {self.task_name}")
 
         def recursive_paint(tmp_list: Tuple[str, Any]) -> List[str]:
@@ -231,7 +256,7 @@ class TaskInstance:
         Yields:
             str: Commands to control hardware.
         """
-        cprint("Task starts", "B")
+        cprint("Task starts.", "B")
         self.log_history.append({"time": GetTime(), "details": "task start"})
         # Initial hardware checks
         yield "ShortPulse"
@@ -269,7 +294,7 @@ class TaskInstance:
                 timer += sleep_duration
                 # Log longer sleeps for better traceability
                 if sleep_duration >= 5:
-                    cprint(f"Sleep {sleep_duration:.1f}s", "M")
+                    cprint(f"Sleep {sleep_duration:.1f}s.", "M")
                 time.sleep(sleep_duration)
 
             elif tmp_key == "Trials":
@@ -361,16 +386,33 @@ class TaskInstance:
 
         self.log_history.append({"time": GetTime(), "details": "task end"})
         yield "RegisterBehavior"
-        cprint("Task ends", "B")
+        cprint("Task ends.", "B")
 
     def archive(self):
+        """Write accumulated task log data to CSV file and clear history buffer."""
         tmp_snapshot = deepcopy(self.log_history)
         self.writer.write_multiple(tmp_snapshot)
         self.log_history = self.log_history[len(tmp_snapshot) :]
 
 
-def GetModules(module_name, exp_name, **kwargs):
-    for dirpath, dirnames, filenames in os.walk(Config.TASK_DIR):
+def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
+    """Load and create task instance from JSON module file.
+
+    Searches the task directory for a JSON file matching the module name
+    and creates a TaskInstance with the loaded configuration.
+
+    Args:
+        module_name: Name of the task module to load (without .json extension).
+        exp_name: Experiment name for data file naming.
+        **kwargs: Additional arguments passed to TaskInstance constructor.
+
+    Returns:
+        Configured TaskInstance ready for execution.
+
+    Raises:
+        FileNotFoundError: If no matching module file is found.
+    """
+    for dirpath, _, filenames in os.walk(Config.TASK_DIR):
         for filename in filenames:
             if (
                 filename[-5:] == ".json"
@@ -381,7 +423,7 @@ def GetModules(module_name, exp_name, **kwargs):
                     return TaskInstance(
                         module_json=module_json, exp_name=exp_name, **kwargs
                     )
-    raise FileNotFoundError(f"Module {module_name} Not Found in {Config.TASK_DIR}!")
+    raise FileNotFoundError(f"Module {module_name} not found in {Config.TASK_DIR}.")
 
 
 if __name__ == "__main__":

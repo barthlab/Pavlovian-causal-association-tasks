@@ -1,8 +1,6 @@
 #!/bin/env python3
 
-"""
-Position Encoder interface for raspberry pi
-"""
+"""Rotary encoder interface for Raspberry Pi locomotion tracking."""
 
 import RPi.GPIO as GPIO
 import os.path as path
@@ -11,10 +9,25 @@ from utils.Utils import GetTime
 from utils.PinManager import Pin
 from utils.Logger import CSVFile
 from copy import deepcopy
+from typing import List, Optional, Callable
 
 
 class PositionEncoder:
-    def __init__(self, leftPin, rightPin, exp_name, callback=None):
+    """Quadrature rotary encoder interface for tracking animal locomotion.
+
+    Monitors two GPIO pins to detect rotation direction and count position
+    changes. Uses state machine logic to handle quadrature encoding.
+    """
+
+    def __init__(self, leftPin: int, rightPin: int, exp_name: str, callback: Optional[Callable] = None):
+        """Initialize position encoder with specified pins and experiment name.
+
+        Args:
+            leftPin: GPIO pin number for encoder channel A.
+            rightPin: GPIO pin number for encoder channel B.
+            exp_name: Experiment name for data file naming.
+            callback: Optional callback function for position changes.
+        """
         self.leftPin = Pin(leftPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
         self.rightPin = Pin(rightPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
@@ -23,17 +36,31 @@ class PositionEncoder:
         self.direction = None
 
         self.callback = callback if callback is not None else self.register_history
-        self.history = [[GetTime(), 0, None],]
+        self.history: List[List] = [[GetTime(), 0, None],]
 
         self.writer = CSVFile(path.join(Config.SAVE_DIR, f"LOCOMOTION_{exp_name}.csv"), ["time", "position", "direction"])
 
         self.leftPin.add_event_detect(GPIO.BOTH, callback=self.transition_occurred)
         self.rightPin.add_event_detect(GPIO.BOTH, callback=self.transition_occurred)
 
-    def register_history(self, value, direction):
+    def register_history(self, value: int, direction: Optional[str]):
+        """Record position change in history buffer.
+
+        Args:
+            value: Current position value.
+            direction: Direction of movement ("L" or "R").
+        """
         self.history.append([GetTime(), value, direction])
 
-    def transition_occurred(self, channel):
+    def transition_occurred(self, channel: int):
+        """Handle encoder state transition events.
+
+        Implements quadrature decoding state machine to track rotation
+        direction and count position changes.
+
+        Args:
+            channel: GPIO channel that triggered the event.
+        """
         p1 = self.leftPin.get_input()
         p2 = self.rightPin.get_input()
         newState = "{}{}".format(p1, p2)
@@ -79,15 +106,29 @@ class PositionEncoder:
 
         self.state = newState
 
-    def getValue(self):
+    def getValue(self) -> int:
+        """Get current position value.
+
+        Returns:
+            Current encoder position count.
+        """
         return self.value
 
     def archive(self):
+        """Write accumulated position data to CSV file and clear history buffer."""
         tmp_snapshot = deepcopy(self.history)
         self.writer.addrows(tmp_snapshot)
         self.history = self.history[len(tmp_snapshot):]
 
 
-def GetEncoder(exp_name):
+def GetEncoder(exp_name: str) -> PositionEncoder:
+    """Create position encoder instance with default configuration.
+
+    Args:
+        exp_name: Experiment name for data file naming.
+
+    Returns:
+        Configured PositionEncoder instance using settings from Config.
+    """
     return PositionEncoder(Config.ENCODER_A_PIN, Config.ENCODER_B_PIN, exp_name=exp_name)
 

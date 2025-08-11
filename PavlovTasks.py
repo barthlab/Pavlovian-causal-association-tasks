@@ -1,4 +1,11 @@
 #!/bin/env python3
+
+"""Main experiment runner for Pavlovian causal association tasks.
+
+This script initializes all hardware components, loads task modules, and
+executes behavioral experiments with data logging and optional video recording.
+"""
+
 import RPi.GPIO as GPIO
 import Config as Config
 from RealTimeTaskManager import GetModules
@@ -19,19 +26,23 @@ cfg = args.parse_args()
 print(cfg)
 
 
-print(f"Data saved at: {Config.SAVE_DIR}")
+print(f"Data saved at: {Config.SAVE_DIR}.")
 video_recording = cfg.cam
 if video_recording:
-    print("-"*8, "camera recording... pay attention to disk space", "-"*8)
+    print("-"*8, "Camera recording enabled. Pay attention to disk space.", "-"*8)
 
 if Config.UNIVERSAL_WATER_VOLUME is not None:
     print(f"Universal water volume is set to {Config.UNIVERSAL_WATER_VOLUME}s.")
 else:
     print("Universal water volume is turned off.")
-    
+
 
 def main():
-    """Set up all the pins and set their initial values"""
+    """Set up hardware pins and execute behavioral experiment.
+
+    Initializes all GPIO pins, sensors, and actuators, then runs the
+    specified task module while logging data and optionally recording video.
+    """
     GPIO.setmode(GPIO.BOARD)
 
     water_pin = Relay(Config.WATER_SOLENOID_PIN)
@@ -96,8 +107,8 @@ def main():
                 module.archive()
                 temp_sensor.archive()
             else:
-                print(command)
-                raise NotImplementedError
+                print(f"Unknown command: {command}")
+                raise NotImplementedError(f"Command '{command}' not implemented.")
 
     # # cleanup
     # GPIO.cleanup()
