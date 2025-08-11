@@ -86,21 +86,19 @@ class TemperatureSensor:
             print(f"WARNING: Could not read sensor file: {e}")
             return None
 
-    def _read_temp(self, retries: int = 3, delay: float = 0.2):
+    def _read_temp(self, retries: int = 1, delay: float = 0.2):
         """
         Reads and parses the temperature. Returns a record for the CSV file
         or None if the read fails.
         """
-        for _ in range(retries):
-            content = self._read_temp_raw()
-            if content and 'YES' in content:
-                match = self._TEMP_REGEX.search(content)
-                if match:
-                    temp_string = match.group(1)
-                    temp_c = float(temp_string) / 1000.0
-                    temp_f = temp_c * (9.0 / 5.0) + 32.0
-                    return [GetTime(), temp_c, temp_f]
-            time.sleep(delay)
+        content = self._read_temp_raw()
+        if content and 'YES' in content:
+            match = self._TEMP_REGEX.search(content)
+            if match:
+                temp_string = match.group(1)
+                temp_c = float(temp_string) / 1000.0
+                temp_f = temp_c * (9.0 / 5.0) + 32.0
+                return [GetTime(), temp_c, temp_f]
         
         print("WARNING: Failed to read valid temperature after multiple retries.")
         return None
@@ -112,7 +110,7 @@ class TemperatureSensor:
             if record:
                 self.history.append(record)
             # wait() is better than sleep() as it can be interrupted immediately
-            self._stop_event.wait(interval)
+            # self._stop_event.wait(interval)
 
     def archive(self):
         """Writes the collected temperature history to the CSV file."""
@@ -124,7 +122,7 @@ class TemperatureSensor:
         # Efficiently clear the portion of history that was just saved
         self.history = self.history[len(tmp_snapshot):]
 
-    def start(self, interval: float = 1):
+    def start(self, interval: float = 0):
         """Starts the background thread for temperature recording."""
         if not self.sensor_found or self._is_running:
             return
