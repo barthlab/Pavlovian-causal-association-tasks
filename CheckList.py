@@ -171,28 +171,22 @@ def check_buzzer():
 
 def check_temperature():
     """Initializes the temp sensor and prints readings periodically."""
-    # The constructor will print a warning if the sensor is not found.
-    sensor = TemperatureSensor("Checklist_Test")
+    exp_name = input("Experiment ID: ")
+    sensor = TemperatureSensor(exp_name)
 
     if not sensor.sensor_found:
         print("Checklist cannot proceed as sensor was not initialized.")
         return
-
-    print("Sensor found. Reading temperature for 30 seconds...")
-    read_success = False
-    for i in range(100):
-        celsius, fahrenheit = sensor.read_temp()
-        if celsius is not None:
-            print(f"Reading: {celsius:.2f}°C / {fahrenheit:.2f}°F")
-            read_success = True
-        else:
-            print("Reading: Failed to get a valid reading.")
-        time.sleep(0.2)
-
-    if read_success:
-        print("\nTemperature sensor check completed. At least one valid reading was obtained.")
-    else:
-        print("\nTemperature sensor check failed. No valid readings were obtained.")
+    
+    start_time = time.time()
+    with sensor:
+        while time.time() - start_time < 600:
+            celsius, fahrenheit = sensor.read_temp()
+            if celsius is not None:
+                print(f"Reading at {time.time() - start_time}: {celsius:.2f}°C / {fahrenheit:.2f}°F")
+            else:
+                print("Reading: Failed to get a valid reading.")
+            time.sleep(1)
 
 
 if __name__ == "__main__":
