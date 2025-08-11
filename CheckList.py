@@ -129,8 +129,8 @@ def check_peltier():
             i.on()
             time.sleep(on_duration)
             i.off()
+            print(f"Testing pin {name} at GPIO pin {i.relaypin.pin_id} complete. Waiting 5s before next test...")
             time.sleep(5)
-            print(f"Testing pin {name} at GPIO pin {i.relaypin.pin_id} complete.")
     GPIO.cleanup()
 
 
