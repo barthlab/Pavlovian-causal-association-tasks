@@ -9,6 +9,7 @@ from tools.Camera import PiCameraRecorder
 from tools.LickDetector import GetDetector
 from tools.PositionRecorder import GetEncoder
 from tools.Buzzer import GetBuzzer
+from tools.TemperatureSensor import GetSensor
 
 
 args = argparse.ArgumentParser()
@@ -50,9 +51,10 @@ def main():
     lick_detector = GetDetector(exp_name=exp_name)
     locomotion_encoder = GetEncoder(exp_name=exp_name)
     buzzer_ = GetBuzzer()
+    temp_sensor = GetSensor(exp_name=exp_name)
     module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector)
 
-    with PiCameraRecorder(exp_name =exp_name, records= video_recording) as camera:
+    with PiCameraRecorder(exp_name=exp_name, records=video_recording) as camera, temp_sensor:
         for _, command in enumerate(module.run()):
             if command== 'ShortPulse':
                 video_pin.hl_pulse()

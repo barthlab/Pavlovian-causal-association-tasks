@@ -10,6 +10,7 @@ from tools.LickDetector import GetDetector
 from tools.PositionRecorder import GetEncoder
 from tools.Buzzer import GetBuzzer
 from tools.Relay import Relay
+from tools.TemperatureSensor import TemperatureSensor
 
 
 args = argparse.ArgumentParser()
@@ -21,6 +22,7 @@ args.add_argument(
     "-wheel", "--wheel", action="store_true", help="check rotatory encoder"
 )
 args.add_argument("-buzzer", "--buzzer", action="store_true", help="check buzzer")
+args.add_argument("-temp", "--temp", action="store_true", help="check temperature sensor")
 cfg = args.parse_args()
 print(cfg)
 
@@ -167,6 +169,31 @@ def check_buzzer():
         time.sleep(1)
     GPIO.cleanup()
 
+def check_temperature():
+    """Initializes the temp sensor and prints readings periodically."""
+    # The constructor will print a warning if the sensor is not found.
+    sensor = TemperatureSensor("Checklist_Test")
+
+    if not sensor.sensor_found:
+        print("Checklist cannot proceed as sensor was not initialized.")
+        return
+
+    print("Sensor found. Reading temperature for 30 seconds...")
+    read_success = False
+    for i in range(100):
+        celsius, fahrenheit = sensor.read_temp()
+        if celsius is not None:
+            print(f"Reading: {celsius:.2f}°C / {fahrenheit:.2f}°F")
+            read_success = True
+        else:
+            print("Reading: Failed to get a valid reading.")
+        time.sleep(0.2)
+
+    if read_success:
+        print("\nTemperature sensor check completed. At least one valid reading was obtained.")
+    else:
+        print("\nTemperature sensor check failed. No valid readings were obtained.")
+
 
 if __name__ == "__main__":
     if cfg.puff:
@@ -187,3 +214,6 @@ if __name__ == "__main__":
     elif cfg.buzzer:
         print("Checking Buzzer...")
         check_buzzer()
+    elif cfg.temp:
+        print("Checking Temperature Sensor...")
+        check_temperature()
