@@ -193,7 +193,7 @@ def check_temperature():
                         tmp_t, celsius, fahrenheit = reading
                         print(f"Live Reading at {tmp_t:.2f}s: {celsius:.2f}°C / {fahrenheit:.2f}°F")
                     last_history_len += len(new_readings)
-                time.sleep(1) # Wait a second before checking for new readings
+                    
         except KeyboardInterrupt:
             print("\nStopping temperature check.")
     

@@ -124,7 +124,7 @@ class TemperatureSensor:
         # Efficiently clear the portion of history that was just saved
         self.history = self.history[len(tmp_snapshot):]
 
-    def start(self, interval: float = 1.0):
+    def start(self, interval: float = 0.2):
         """Starts the background thread for temperature recording."""
         if not self.sensor_found or self._is_running:
             return
