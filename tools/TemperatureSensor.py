@@ -117,7 +117,7 @@ class TemperatureSensor:
         """Target function for the writing thread."""
         while not (self._stop_event.is_set() and self._data_queue.empty()):
             try:
-                record = self._data_queue.get(timeout=1)
+                record = self._data_queue.get(timeout=0.1)
                 self._writer.addrow(record)
                 self._data_queue.task_done()
             except queue.Empty:
