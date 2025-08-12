@@ -22,7 +22,7 @@ UNICODE_TRIAL = {
     "PeltierLeft": "\x1b[44m Left  ■ □ \x1b[0m",
     "PeltierRight": "\x1b[44m Right  □ ■ \x1b[0m",
     "PeltierBoth": "\x1b[44m Both  ■ ■ \x1b[0m",
-    "FakeRelay": "\x1b[41m Fake ⨉  \x1b[0m",
+    "FakeRelay": "\x1b[41m Fake  □ \x1b[0m",
     "NoWater": "\x1b[100mNoWater\x1b[0m",
     "Water": "\x1b[104mWater\x1b[0m",
     "Sleep": "\x1b[90mSleep\x1b[0m",
