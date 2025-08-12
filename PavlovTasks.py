@@ -49,7 +49,7 @@ def main():
     water_pin = Relay(Config.WATER_SOLENOID_PIN)
     airpuff_pin = Relay(Config.AIRPUFF_SOLENOID_PIN)
     fakepuff_pin = Relay(Config.FAKEPUFF_SOLENOID_PIN)
-    fakewater_pin = Relay(Config.FAKEWATER_SOLENOID_PIN)
+    fakerelay_pin = Relay(Config.FAKERELAY_SOLENOID_PIN)
     peltier_left_pin = Relay(Config.PELTIER_LEFT_PIN)
     peltier_right_pin = Relay(Config.PELTIER_RIGHT_PIN)
 
@@ -112,10 +112,15 @@ def main():
                 water_pin.on()
             elif command == 'WaterOff':
                 water_pin.off()
+
             elif command == 'NoWaterOn':
-                fakewater_pin.on()
+                fakerelay_pin.on()
             elif command == 'NoWaterOff':
-                fakewater_pin.off()
+                fakerelay_pin.off()
+            elif command == 'FakeRelayOn':
+                fakerelay_pin.on()
+            elif command == 'FakeRelayOff':
+                fakerelay_pin.off()
 
             elif command == 'RegisterBehavior':
                 locomotion_encoder.archive()

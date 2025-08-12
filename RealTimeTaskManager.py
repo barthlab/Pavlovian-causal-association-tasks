@@ -218,6 +218,7 @@ class TaskInstance:
                 "Blank",
                 "Water",
                 "NoWater",
+                "FakeRelay",
             ):
                 # These are terminal nodes. Format the event name and duration into a
                 # simple, standardized block, handling both fixed and ranged durations.
@@ -371,6 +372,7 @@ class TaskInstance:
                 "PeltierLeft",
                 "PeltierRight",
                 "PeltierBoth",
+                "FakeRelay",
             }:
                 # Activates a device for a specified duration
                 tmp_duration = get_value(tmp_value)
@@ -433,7 +435,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("PelACC50", "test_file")
+    x = GetModules("PeldeMo", "test_file")
 
     t0 = time.time()
     for _command in x.run():

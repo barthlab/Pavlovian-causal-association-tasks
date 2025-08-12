@@ -1,5 +1,5 @@
 {
-  "task_name": "acclimation 50% water passive, for peltiers",
+  "task_name": "acclimation randome, for peltiers",
   "task_rng": "sobol",
   "task_content": [
     "Timeline", [
@@ -11,9 +11,10 @@
             ["Buzzer", 0.2],
             ["Sleep", [1.2, 1.8]],
             ["Choice", [
-              [0.3, ["PeltierLeft", 0.5]],
-              [0.3, ["PeltierRight", 0.5]],
-              [0.4, ["PeltierBoth", 0.5]]
+              [0.25, ["PeltierLeft", 0.5]],
+              [0.25, ["PeltierRight", 0.5]],
+              [0.25, ["PeltierBoth", 0.5]],
+              [0.25, ["FakeRelay", 0.5]]
             ]],
             ["Sleep", [8, 12]]
           ]]}],
