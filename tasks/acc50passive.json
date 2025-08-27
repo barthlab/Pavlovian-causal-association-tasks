@@ -1,0 +1,22 @@
+{
+  "task_name": "acclimation 50% water passive",
+  "task_rng": "sobol",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 30],
+      ["Trials", {
+        "total_duration": 540,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.2],
+            ["Sleep", [3.2, 3.8]],
+            ["Choice", [
+              [0.5, ["Water", 0.02]],
+              [0.5, ["NoWater", 0.02]]
+            ]],
+            ["Sleep", [8, 12]]
+          ]]}],
+      ["Sleep", 30]
+    ]
+  ]
+}
