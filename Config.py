@@ -32,10 +32,10 @@ LICKPORT_PIN = 29
 
 # Hardware Configuration Flags
 PWM_FLAG = False
-print("Training is now using PWM buzzer." if PWM_FLAG else "Training is now using non-PWM buzzer.")
+print("Attention: Training is now using ", "PWM buzzer." if PWM_FLAG else "non-PWM buzzer.")
 
 HIGH_LEVEL_TRIGGER = False
-print("Training is now using high level trigger." if HIGH_LEVEL_TRIGGER else "Training is now using low level trigger.")
+print("Attention: Training is now using ", "high level trigger." if HIGH_LEVEL_TRIGGER else "low level trigger.")
 
 # Data Directory Configuration
 SAVE_DIR = path.join(path.dirname(__file__), "data")
