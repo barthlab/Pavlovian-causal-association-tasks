@@ -8,16 +8,14 @@
         "total_duration": 540,
         "trial_content": [
           "Timeline",[
-            ["Buzzer", 0.2],
-            ["Sleep", [1.2, 1.8]],
             ["Choice", [
               [0.5, ["Timeline", [
-                ["PeltierBoth", 0.5],
+                ["PeltierBoth", 2],
                 ["Sleep", 1.5],
                 ["Water", 0.02]
               ]]],
               [0.5, ["Timeline", [
-                ["Blank", 0.5],
+                ["Blank", 2],
                 ["Sleep", 1.5],
                 ["NoWater", 0.02]
               ]]]]],
