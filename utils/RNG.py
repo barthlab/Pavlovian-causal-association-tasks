@@ -58,7 +58,7 @@ class NumberGenerator:
             self._qmc_counters = np.zeros(self.dimension, dtype=int)
 
         elif self.generator_type == 'default':
-            seed_sequence = np.random.SeedSequence(master_rng.integers(2**64 - 1))
+            seed_sequence = np.random.SeedSequence(master_rng.integers(2**32 - 1))
             child_seeds = seed_sequence.spawn(self.dimension)
             self._generators = [np.random.default_rng(s) for s in child_seeds]
 
