@@ -15,7 +15,7 @@
                 ["Water", 0.02]
               ]]],
               [0.5, ["Timeline", [
-                ["Blank", 2],
+                ["FakeRelay", 2],
                 ["Sleep", 1.5],
                 ["NoWater", 0.02]
               ]]]]],
