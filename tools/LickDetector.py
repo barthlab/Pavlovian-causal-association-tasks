@@ -2,6 +2,7 @@
 
 """Lick sensor interface for Raspberry Pi behavioral monitoring."""
 
+import time
 import RPi.GPIO as GPIO
 import os.path as path
 import Config as Config
@@ -31,7 +32,7 @@ class LickDetector:
 
         self.writer = CSVFile(path.join(Config.SAVE_DIR, f"LICK_{exp_name}.csv"), ["time", ])
 
-        self.lickpin.add_event_detect(GPIO.FALLING, callback=self.register_history)
+        self.lickpin.add_event_detect(GPIO.BOTH, callback=self.register_history)
 
     def register_history(self, channel: int):
         """Callback function for lick event detection.
@@ -40,6 +41,9 @@ class LickDetector:
             channel: GPIO channel that triggered the event.
         """
         current_state = GPIO.input(channel)
+        if current_state == GPIO.LOW:
+            return
+        time.sleep(1/Config.LICKING_MAXIMUM_FREQUENCY)
         if current_state == GPIO.LOW:
             print(":P", end='', flush=True)
             self.history.append([GetTime(),])

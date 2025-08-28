@@ -46,6 +46,7 @@ os.makedirs(SAVE_DIR, exist_ok=True)
 # Timing Parameters
 RESPONSE_WINDOW_CHECKING_DT = 0.2
 PURETONE_HZ = 4000
+LICKING_MAXIMUM_FREQUENCY = 20  # Hz
 
 # Water Delivery Configuration
 UNIVERSAL_WATER_VOLUME = None  # seconds, turn off by setting to None
