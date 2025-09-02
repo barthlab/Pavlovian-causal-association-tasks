@@ -1,6 +1,6 @@
 {
   "task_name": "acclimation 50% water passive, by Matt",
-  "task_rng": "halton",
+  "task_rng": "default",
   "task_content": [
     "Timeline", [
       ["Sleep", 30],

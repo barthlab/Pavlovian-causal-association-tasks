@@ -104,7 +104,7 @@ Tasks are defined in JSON format with hierarchical structure.
 ```json
 {
   "task_name": "PSE50",
-  "task_rng": "halton",
+  "task_rng": "default",
   "task_content": [
     "Timeline", [
       ["Sleep", 100],

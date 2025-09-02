@@ -1,6 +1,6 @@
 {
   "task_name": "acclimation 50% water passive",
-  "task_rng": "sobol",
+  "task_rng": "default",
   "task_content": [
     "Timeline", [
       ["Sleep", 30],

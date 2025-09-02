@@ -323,7 +323,7 @@ class TaskInstance:
                 assert sum(probs) == 1.0, "Probabilities in 'Choice' must sum to 1."
                 choice_index = np.searchsorted(np.cumsum(probs), rx)
                 
-                # print(f"Choice: {rx:.3f}, Stream {stream_id}, Compared to {probs}, Chose {choice_index}th option.")
+                print(f"Choice: {rx:.3f}, Stream {stream_id}, Compared to {probs}, Chose {choice_index}th option.")
                 yield from recursive_run(tmp_value[int(choice_index)][1])
 
             elif tmp_key == "Response":
@@ -435,7 +435,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("PeldeMo", "test_file")
+    x = GetModules("PelSAT50passiVe", "test_file")
 
     t0 = time.time()
     for _command in x.run():

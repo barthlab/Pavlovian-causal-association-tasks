@@ -1,6 +1,6 @@
 {
   "task_name": "Test Task",
-  "task_rng": "halton",
+  "task_rng": "default",
   "task_content": [
     "Timeline", [
       ["Sleep", 15],

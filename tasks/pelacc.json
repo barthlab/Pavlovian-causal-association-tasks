@@ -1,6 +1,6 @@
 {
   "task_name": "acclimation randome, for peltiers",
-  "task_rng": "sobol",
+  "task_rng": "default",
   "task_content": [
     "Timeline", [
       ["Sleep", 30],

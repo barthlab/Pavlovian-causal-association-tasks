@@ -1,6 +1,6 @@
 {
   "task_name": "peltier sensory association 50% water passive",
-  "task_rng": "sobol",
+  "task_rng": "default",
   "task_content": [
     "Timeline", [
       ["Sleep", 30],
@@ -8,14 +8,16 @@
         "total_duration": 540,
         "trial_content": [
           "Timeline",[
+            ["Buzzer", 0.2],
+            ["Sleep", [1.2, 1.8]],
             ["Choice", [
               [0.5, ["Timeline", [
-                ["PeltierBoth", 2],
+                ["PeltierBoth", 0.5],
                 ["Sleep", 1.5],
                 ["Water", 0.02]
               ]]],
               [0.5, ["Timeline", [
-                ["FakeRelay", 2],
+                ["FakeRelay", 0.5],
                 ["Sleep", 1.5],
                 ["NoWater", 0.02]
               ]]]]],
