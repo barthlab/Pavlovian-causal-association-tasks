@@ -3,7 +3,9 @@ from scipy.stats import qmc
 import hashlib
 import pickle
 from scipy.special import i0
-import Config
+# import Config
+class Config:
+    RANDOMSEED = 42
 from collections import deque
 
 master_rng = np.random.default_rng(Config.RANDOMSEED)
@@ -142,7 +144,7 @@ class NumberGenerator:
             # giving each one its own independent child RNG.
             self._generators = [
                 RepulsivePRNG(
-                    history_size=kwargs.get('history_size', 5),
+                    history_size=kwargs.get('history_size', 15),
                     concentration=kwargs.get('concentration', 0.5),
                     decay=kwargs.get('decay', 0.5),
                     rng_instance=rng
@@ -181,112 +183,180 @@ if __name__ == '__main__':
         return Counter(run_lengths)
     
     # --- Tunable Parameters ---
-    N_SAMPLES = 1000      # Number of samples per measurement
-    STREAM_ID = 0         # Which random stream to use for all tests
-    N_MEASURE = 5         # Number of independent measurements for each parameter set
+    N_SAMPLES = 50        # Number of samples per measurement
+    STREAM_ID = 0          # Which random stream to use for all tests
+    N_MEASURE = 500        # Number of independent measurements for each parameter set
 
     # --- 1. Define the Grid Search Parameters ---
     history_sizes = [5, 10, 15]
-    # CHANGED: Use a logarithmic scale for concentration for better parameter exploration
-    concentration_values = np.logspace(np.log10(0.1), np.log10(10.0), 10)
-    decay_values = np.linspace(0.1, 0.99, 10)
+    concentration_values = np.logspace(np.log10(0.01), np.log10(2.0), 20)
+    decay_values = np.linspace(0.01, 0.99, 20)
 
-    # Store results in numpy arrays for mean and standard deviation
+    # Store results for both metrics
     results_mean = {hs: np.zeros((len(concentration_values), len(decay_values))) for hs in history_sizes}
     results_std = {hs: np.zeros((len(concentration_values), len(decay_values))) for hs in history_sizes}
+    drift_results_mean = {hs: np.zeros((len(concentration_values), len(decay_values))) for hs in history_sizes}
+    drift_results_std = {hs: np.zeros((len(concentration_values), len(decay_values))) for hs in history_sizes}
 
     # --- 2. Run the Baseline 'Default' Generator multiple times ---
     print(f"Running {N_MEASURE} baseline measurements...")
-    baseline_measurements = []
+    baseline_run_measurements = []
+    baseline_drift_measurements = []
     for _ in range(N_MEASURE):
         default_gen = NumberGenerator(generator_type='default')
         default_values = [default_gen.random_from_stream(STREAM_ID) for _ in range(N_SAMPLES)]
         default_flips = ['P' if v > 0.5 else 'b' for v in default_values]
+        
+        # Metric 1: Run Length
         default_run_dist = analyze_runs(default_flips)
-        baseline_measurements.append(N_SAMPLES / sum(default_run_dist.values()))
+        baseline_run_measurements.append(N_SAMPLES / sum(default_run_dist.values()))
 
-    baseline_avg_run_length = np.mean(baseline_measurements)
-    baseline_std_run_length = np.std(baseline_measurements)
+        # Metric 2: Total Drift
+        num_heads = default_flips.count('P')
+        num_tails = default_flips.count('b')
+        drift = abs(num_heads - num_tails)
+        baseline_drift_measurements.append(drift)
+
+    baseline_avg_run_length = np.mean(baseline_run_measurements)
+    baseline_std_run_length = np.std(baseline_run_measurements)
     print(f"Baseline (Default RNG) Average Run Length: {baseline_avg_run_length:.3f} ± {baseline_std_run_length:.3f}")
+    
+    baseline_avg_drift = np.mean(baseline_drift_measurements)
+    baseline_std_drift = np.std(baseline_drift_measurements)
+    print(f"Baseline (Default RNG) Average Drift |H-T|: {baseline_avg_drift:.3f} ± {baseline_std_drift:.3f}")
 
     # --- 3. Perform the Grid Search with multiple measurements ---
     for hs in history_sizes:
         print(f"\nProcessing History Size: {hs}...")
         for i, conc in enumerate(concentration_values):
             for j, dec in enumerate(decay_values):
-                measurements = []
+                run_measurements = []
+                drift_measurements = []
                 for k in range(N_MEASURE):
                     params = {'history_size': hs, 'concentration': conc, 'decay': dec}
                     gen = NumberGenerator(generator_type='repulsive', dimension=1, **params)
 
                     values = [gen.random_from_stream(STREAM_ID) for _ in range(N_SAMPLES)]
-                    coin_flips = ['P' if v > 0.5 else 'b' for v in values]
+                    coin_flips = ['P'if v > 0.5 else'b'for v in values]
+                    
+                    # --- Metric 1: Average Run Length ---
                     run_distribution = analyze_runs(coin_flips)
-
                     total_runs = sum(run_distribution.values())
                     avg_run_length = N_SAMPLES / total_runs if total_runs > 0 else 0
-                    measurements.append(avg_run_length)
+                    run_measurements.append(avg_run_length)
 
-                results_mean[hs][i, j] = np.mean(measurements)
-                results_std[hs][i, j] = np.std(measurements)
+                    # --- Metric 2: Total Drift ---
+                    num_heads = coin_flips.count('P')
+                    num_tails = coin_flips.count('b')
+                    drift = abs(num_heads - num_tails)
+                    drift_measurements.append(drift)
 
-    # --- 4. Visualize the Results with a proper Log Scale Axis ---
-    print("\nGenerating visualizations...")
+                # Store results for run length
+                results_mean[hs][i, j] = np.mean(run_measurements)
+                results_std[hs][i, j] = np.std(run_measurements)
+
+                # Store results for drift
+                drift_results_mean[hs][i, j] = np.mean(drift_measurements)
+                drift_results_std[hs][i, j] = np.std(drift_measurements)
+
+    # --- 4. Visualize the Run Length Results ---
+    print("\nGenerating run length visualizations...")
     for hs in history_sizes:
         fig, ax = plt.subplots(figsize=(12, 10))
 
         data_mean = results_mean[hs]
         data_std = results_std[hs]
 
-        # Create meshgrid for pcolormesh
-        # These represent the coordinates of the center of each cell
         X, Y = np.meshgrid(concentration_values, decay_values)
-
-        # FIXED: Use pcolormesh instead of imshow for non-uniform coordinates
-        # shading='auto' allows pcolormesh to determine the cell boundaries
         im = ax.pcolormesh(X, Y, data_mean.T, cmap='viridis', shading='auto')
-
-        # FIXED: Set the x-axis to a logarithmic scale
         ax.set_xscale('log')
 
-        # Add a colorbar
         cbar = fig.colorbar(im, ax=ax, pad=0.05, shrink=0.9)
         cbar.set_label('Average Run Length (Mean)', fontsize=12, labelpad=15)
 
-        # Add a dashed line to the colorbar for the baseline
         vmin, vmax = im.get_clim()
         norm_baseline = (baseline_avg_run_length - vmin) / (vmax - vmin)
         if 0 <= norm_baseline <= 1:
             cbar.ax.plot([0, 1], [norm_baseline, norm_baseline], color='red', linestyle='--', linewidth=3)
             cbar.ax.text(1.1, norm_baseline, '<-Baseline', color='red', ha='left', va='center', fontsize=10, transform=cbar.ax.transAxes)
 
-        # Add text annotations for mean ± std deviation to each cell
         for i in range(len(concentration_values)):
             for j in range(len(decay_values)):
                 mean_val = data_mean[i, j]
                 std_val = data_std[i, j]
                 text_content = f"{mean_val:.2f}\n±{std_val:.2f}"
-
                 bg_color_val_norm = (mean_val - vmin) / (vmax - vmin)
                 text_color = "white" if bg_color_val_norm < 0.5 else "black"
-
                 ax.text(concentration_values[i], decay_values[j], text_content, ha="center", va="center", color=text_color, fontsize=8)
 
         ax.set_xlabel('Concentration (κ) - Log Scale', fontsize=12)
         ax.set_ylabel('Decay (γ)', fontsize=12)
         ax.set_title(f'Average Coin Flip Run Length (History Size = {hs}, N={N_MEASURE})', fontsize=14, pad=20)
+        ax.set_xticks(concentration_values)
+        ax.set_xticklabels([f'{v:.1f}' for v in concentration_values], rotation=45)
+        ax.set_yticks(decay_values)
+        ax.set_yticklabels([f'{v:.2f}' for v in decay_values])
+        
+        plt.tight_layout()
+        plt.savefig(f'grid_search_annotated_log_history_size_{hs}.png')
+        plt.close(fig)
 
-        # Set ticks to match the grid cell centers
-        # For a log scale, it's often better to let Matplotlib decide the major ticks
-        # or use a LogFormatter, but for this grid, explicitly setting them is fine.
+    print("Run length visualization complete. Check for 'grid_search_annotated_log_history_size_*.png' files.")
+
+    # --- 5. Visualize the Drift Results ---
+    print("\nGenerating drift visualizations...")
+
+    global_vmin = baseline_avg_drift
+    global_vmax = baseline_avg_drift
+    for hs in history_sizes:
+        min_val = np.min(drift_results_mean[hs])
+        max_val = np.max(drift_results_mean[hs])
+        if min_val < global_vmin:
+            global_vmin = min_val
+        if max_val > global_vmax:
+            global_vmax = max_val
+
+    for hs in history_sizes:
+        fig, ax = plt.subplots(figsize=(12, 10))
+
+        data_mean = drift_results_mean[hs]
+        data_std = drift_results_std[hs]
+
+        X, Y = np.meshgrid(concentration_values, decay_values)
+        
+        # Use the pre-calculated global vmin/vmax to ensure consistent color scales
+        im = ax.pcolormesh(X, Y, data_mean.T, cmap='cividis', shading='auto', vmin=global_vmin, vmax=global_vmax)
+        ax.set_xscale('log')
+
+        cbar = fig.colorbar(im, ax=ax, pad=0.05, shrink=0.9)
+        cbar.set_label('Average Total Drift |Heads-Tails| (Mean)', fontsize=12, labelpad=15)
+
+        # Now that vmin/vmax are fixed, the baseline will always be in range.
+        norm_baseline = (baseline_avg_drift - global_vmin) / (global_vmax - global_vmin)
+        cbar.ax.plot([0, 1], [norm_baseline, norm_baseline], color='red', linestyle='--', linewidth=3)
+        cbar.ax.text(1.1, norm_baseline, '<-Baseline', color='red', ha='left', va='center', fontsize=10, transform=cbar.ax.transAxes)
+
+        # Add text annotations for mean ± std deviation to each cell
+        for i in range(len(concentration_values)):
+            for j in range(len(decay_values)):
+                mean_val = data_mean[i, j]
+                std_val = data_std[i, j]
+                text_content = f"{mean_val:.1f}\n±{std_val:.1f}"
+
+                bg_color_val_norm = (mean_val - global_vmin) / (global_vmax - global_vmin)
+                text_color = "white" if bg_color_val_norm < 0.5 else "black"
+                ax.text(concentration_values[i], decay_values[j], text_content, ha="center", va="center", color=text_color, fontsize=8)
+
+        ax.set_xlabel('Concentration (κ) - Log Scale', fontsize=12)
+        ax.set_ylabel('Decay (γ)', fontsize=12)
+        ax.set_title(f'Average Total Drift |Heads-Tails| (History Size = {hs}, N={N_MEASURE})', fontsize=14, pad=20)
         ax.set_xticks(concentration_values)
         ax.set_xticklabels([f'{v:.1f}' for v in concentration_values], rotation=45)
         ax.set_yticks(decay_values)
         ax.set_yticklabels([f'{v:.2f}' for v in decay_values])
 
-
         plt.tight_layout()
-        plt.savefig(f'grid_search_annotated_log_history_size_{hs}.png')
+        plt.savefig(f'grid_search_drift_log_history_size_{hs}.png')
         plt.close(fig)
 
-    print("Visualization complete. Check for 'grid_search_annotated_log_history_size_*.png' files.")
+    print("Drift visualization complete. Check for 'grid_search_drift_log_history_size_*.png' files.")
