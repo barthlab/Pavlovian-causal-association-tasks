@@ -49,7 +49,7 @@ PURETONE_HZ = 4000
 LICKING_MAXIMUM_FREQUENCY = 20  # Hz
 
 # Water Delivery Configuration
-UNIVERSAL_WATER_VOLUME = 0.05  # seconds, turn off by setting to None
+UNIVERSAL_WATER_VOLUME = 0.04  # seconds, turn off by setting to None
 
 # Random Number Generator Configuration
 RANDOMSEED = None  # Warning: setting RANDOMSEED will make experiments deterministic
