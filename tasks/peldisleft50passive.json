@@ -1,0 +1,31 @@
+{
+  "task_name": "peltier discrimination 50% water passive with water reward only on left",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 30],
+      ["Trials", {
+        "total_duration": 540,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.2],
+            ["Sleep", [1.2, 1.8]],
+            ["Choice", [
+              [0.5, ["Timeline", [
+                ["PeltierLeft", 0.5],
+                ["Sleep", 1.5],
+                ["Water", 0.02]
+              ]]],
+              [0.5, ["Timeline", [
+                ["PeltierRight", 0.5],
+                ["Sleep", 1.5],
+                ["NoWater", 0.02]
+              ]]]]],
+            ["Sleep", [8, 12]]
+          ]
+        ]
+      }],
+      ["Sleep", 30]
+    ]
+  ]
+}
