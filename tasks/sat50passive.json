@@ -1,0 +1,31 @@
+{
+  "task_name": "sensory association 50% water passive",
+  "task_rng": "repulsive",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 30],
+      ["Trials", {
+        "total_duration": 540,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.2],
+            ["Sleep", [1.2, 1.8]],
+            ["Choice", [
+              [0.5, ["Timeline", [
+                ["VerticalPuff", 0.5],
+                ["Sleep", 1.5],
+                ["Water", 0.02]
+              ]]],
+              [0.5, ["Timeline", [
+                ["Blank", 0.5],
+                ["Sleep", 1.5],
+                ["NoWater", 0.02]
+              ]]]]],
+            ["Sleep", [8, 12]]
+          ]
+        ]
+      }],
+      ["Sleep", 30]
+    ]
+  ]
+}
