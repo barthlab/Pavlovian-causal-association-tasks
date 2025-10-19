@@ -1,6 +1,6 @@
 {
   "task_name": "cue-puff 90% passive",
-  "task_rng": "repulsive",
+  "task_rng": "default",
   "task_content": [
     "Timeline", [
       ["Sleep", 30],
