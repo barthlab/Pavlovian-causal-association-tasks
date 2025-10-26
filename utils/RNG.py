@@ -3,9 +3,7 @@ from scipy.stats import qmc
 import hashlib
 import pickle
 from scipy.special import i0
-# import Config
-class Config:
-    RANDOMSEED = 42
+import Config
 from collections import deque
 
 master_rng = np.random.default_rng(Config.RANDOMSEED)
