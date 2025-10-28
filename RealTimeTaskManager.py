@@ -276,8 +276,17 @@ class TaskInstance:
                 float: The calculated value, rounded to 3 decimal places.
             """
             if isinstance(tmp_value, list):
-                # If tmp_value is a list, sample from a uniform distribution [min, max]
-                rx = np.random.uniform(*tmp_value)
+                if len(tmp_value) == 2:
+                    # If tmp_value is a length 2 list, sample from a uniform distribution [min, max]
+                    rx = np.random.uniform(*tmp_value)
+                elif len(tmp_value) == 4 and tmp_value[2] == "exp":
+                    # If tmp_value is a length 4 list with "exp" as the third element, sample from an exponential distribution [min, max, "exp", lam]
+                    L = tmp_value[1] - tmp_value[0]  # Length of the interval
+                    u = np.random.rand()
+                    factor = 1-np.exp(-tmp_value[3] * L)
+                    rx = tmp_value[0] - np.log(1 - u * factor) / tmp_value[3]
+                else:
+                    raise NotImplementedError(f"Invalid list format at get_value: {tmp_value}")
             else:
                 rx = float(tmp_value)
             return np.round(rx, 3)
@@ -435,7 +444,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("PelSAT50passiVe", "test_file")
+    x = GetModules("Prederr_Cp_unPred", "test_file")
 
     t0 = time.time()
     for _command in x.run():

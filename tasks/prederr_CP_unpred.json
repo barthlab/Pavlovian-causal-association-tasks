@@ -1,0 +1,30 @@
+{
+  "task_name": "prediction error task cue - puff, 90% association 10% unpredicted",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 30],
+      ["Trials", {
+        "total_duration": 540,
+        "trial_content": [
+          "Timeline",[
+            ["Choice", [
+              [0.9, ["Timeline", [
+                ["Buzzer", 0.2],
+                ["Sleep", 1.5],
+                ["VerticalPuff", 0.5]
+                ]]],
+              [0.1, ["Timeline", [
+                ["Sleep", 1.7],
+                ["VerticalPuff", 0.5]
+                ]]]
+            ]],
+            
+            ["Sleep", [7, 15, "exp", 0.2]]
+          ]
+        ]
+      }],
+      ["Sleep", 30]
+    ]
+  ]
+}
