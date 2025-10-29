@@ -239,6 +239,7 @@ def check_buzzer():
     buzzer_ = GetBuzzer()
     print("Testing buzzer with 10 activation cycles.")
     for test_idx in range(10):
+        print(f"Testing buzzer cycle {test_idx + 1} at {1000 + test_idx * 1000}Hz.")
         buzzer_.tune(1000 + test_idx * 1000)
         buzzer_.on()
         time.sleep(1)
