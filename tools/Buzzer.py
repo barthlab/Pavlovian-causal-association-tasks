@@ -5,6 +5,8 @@
 import RPi.GPIO as GPIO
 import Config as Config
 import time
+from typing import cast
+from gpiozero import PWMOutputDevice
 from utils.PinManager import Pin
 
 
@@ -19,12 +21,11 @@ class Buzzer:
         """Initialize buzzer with specified pin and frequency.
 
         Args:
-            buzzer_pin: GPIO pin number for buzzer control.
+            buzzer_pin: Board pin number for buzzer control.
             frequency: PWM frequency in Hz for tone generation.
         """
-        GPIO.setup(buzzer_pin, GPIO.OUT)
         if Config.PWM_FLAG: # PWM Buzzer
-            self.buzzer = GPIO.PWM(buzzer_pin, frequency)
+            self.buzzer = PWMOutputDevice(f"BOARD{buzzer_pin}", frequency=frequency)
         else:
             self.buzzer = Pin(buzzer_pin, GPIO.OUT)
             self.buzzer.output(GPIO.HIGH)
@@ -41,7 +42,7 @@ class Buzzer:
         Uses 50% duty cycle for PWM mode or sets pin LOW for digital mode.
         """
         if Config.PWM_FLAG: # PWM Buzzer
-            self.buzzer.start(50)
+            self.buzzer.value = 0.5
         else:
             self.buzzer.output(GPIO.LOW)
 
@@ -51,10 +52,18 @@ class Buzzer:
         Stops PWM signal or sets pin HIGH for digital mode.
         """
         if Config.PWM_FLAG: # PWM Buzzer
-            self.buzzer.stop()
+            self.buzzer.value = 0
         else:
             self.buzzer.output(GPIO.HIGH)
 
+    def tune(self, frequency: int):
+        """Change buzzer frequency.
+
+        Args:
+            frequency: New PWM frequency in Hz.
+        """
+        if Config.PWM_FLAG: # PWM Buzzer
+            self.buzzer.frequency = frequency
 
 def GetBuzzer(*args) -> Buzzer:
     """Create buzzer instance with default configuration.

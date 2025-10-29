@@ -238,7 +238,8 @@ def check_buzzer():
     GPIO.setmode(GPIO.BOARD)
     buzzer_ = GetBuzzer()
     print("Testing buzzer with 10 activation cycles.")
-    for _ in range(10):
+    for test_idx in range(10):
+        buzzer_.tune(1000 + test_idx * 1000)
         buzzer_.on()
         time.sleep(1)
         buzzer_.stop()
