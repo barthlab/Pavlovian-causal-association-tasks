@@ -27,6 +27,8 @@ UNICODE_TRIAL = {
     "Water": "\x1b[104mWater\x1b[0m",
     "Sleep": "\x1b[90mSleep\x1b[0m",
     "Buzzer": "\x1b[45mBuzzer\x1b[0m",
+    "Buzzer5000": "\x1b[45mBuzzer5000\x1b[0m",
+    "Buzzer8000": "\x1b[45mBuzzer8000\x1b[0m",
     "no-lick": "\x1b[31mno-lick\x1b[0m",
     "lick": "\x1b[32mlick\x1b[0m",
 }

@@ -25,6 +25,7 @@ class Buzzer:
             frequency: PWM frequency in Hz for tone generation.
         """
         if Config.PWM_FLAG: # PWM Buzzer
+            print("Initializing PWM Buzzer, make sure you are in the right pigpiod sample rate...")
             self.buzzer = PWMOutputDevice(f"BOARD{buzzer_pin}", frequency=frequency)
         else:
             self.buzzer = Pin(buzzer_pin, GPIO.OUT)
@@ -63,6 +64,7 @@ class Buzzer:
             frequency: New PWM frequency in Hz.
         """
         if Config.PWM_FLAG: # PWM Buzzer
+            assert frequency in (4000, 5000, 8000, 10000), f"Frequency {frequency} not supported."
             self.buzzer.frequency = frequency
 
 def GetBuzzer(*args) -> Buzzer:

@@ -209,7 +209,6 @@ class TaskInstance:
             # --- Base Cases: Simple timed events ---
             elif tmp_key in (
                 "Sleep",
-                "Buzzer",
                 "VerticalPuff",
                 "HorizontalPuff",
                 "PeltierLeft",
@@ -219,7 +218,7 @@ class TaskInstance:
                 "Water",
                 "NoWater",
                 "FakeRelay",
-            ):
+            ) or "Buzzer" in tmp_key:
                 # These are terminal nodes. Format the event name and duration into a
                 # simple, standardized block, handling both fixed and ranged durations.
                 duration_str = (
@@ -286,7 +285,7 @@ class TaskInstance:
                     factor = 1-np.exp(-tmp_value[3] * L)
                     rx = tmp_value[0] - np.log(1 - u * factor) / tmp_value[3]
                 else:
-                    raise NotImplementedError(f"Invalid list format at get_value: {tmp_value}")
+                    raise ValueError(f"Invalid value format: {tmp_value}")
             else:
                 rx = float(tmp_value)
             return np.round(rx, 3)
@@ -374,7 +373,6 @@ class TaskInstance:
                 self.log_history.append({"time": GetTime(), "details": f"{tmp_key}Off"})
 
             elif tmp_key in {
-                "Buzzer",
                 "VerticalPuff",
                 "HorizontalPuff",
                 "Blank",
@@ -391,6 +389,20 @@ class TaskInstance:
                 yield f"{tmp_key}On"
                 time.sleep(tmp_duration)
                 yield f"{tmp_key}Off"
+                self.log_history.append({"time": GetTime(), "details": f"{tmp_key}Off"})
+
+            elif "Buzzer" in tmp_key:
+                freq2play = int(tmp_key[6:]) if len(tmp_key) > 6 else Config.PURETONE_HZ
+                yield f"BuzzerTune {freq2play}"
+
+                # Activates a device for a specified duration
+                tmp_duration = get_value(tmp_value)
+                timer += tmp_duration
+                uprint(f"-{tmp_key}-")
+                self.log_history.append({"time": GetTime(), "details": f"{tmp_key}On"})
+                yield f"BuzzerOn"
+                time.sleep(tmp_duration)
+                yield f"BuzzerOff"
                 self.log_history.append({"time": GetTime(), "details": f"{tmp_key}Off"})
 
             elif tmp_key in ("Pass",):
@@ -444,7 +456,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("Prederr_Cp_unPred", "test_file")
+    x = GetModules("Prederr_PC_Diff", "test_file")
 
     t0 = time.time()
     for _command in x.run():

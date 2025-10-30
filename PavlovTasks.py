@@ -107,6 +107,9 @@ def main():
                 buzzer_.on()
             elif command == "BuzzerOff":
                 buzzer_.stop()
+            elif command.startswith("BuzzerTune"):
+                freq2play = int(command.split(" ")[1])
+                buzzer_.tune(freq2play)
 
             elif command == 'WaterOn':
                 water_pin.on()
