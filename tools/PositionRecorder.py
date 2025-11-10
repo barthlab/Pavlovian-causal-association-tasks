@@ -28,8 +28,8 @@ class PositionEncoder:
             exp_name: Experiment name for data file naming.
             callback: Optional callback function for position changes.
         """
-        self.leftPin = Pin(leftPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-        self.rightPin = Pin(rightPin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        self.leftPin = Pin(leftPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        self.rightPin = Pin(rightPin, GPIO.IN, pull_up_down=GPIO.PUD_UP)
 
         self.value = 0
         self.state = '00'
