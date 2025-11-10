@@ -230,6 +230,20 @@ class TaskInstance:
                     f"-{tmp_key}-", f"-{duration_str}-", sub_char="-"
                 )
                 final_blocks = [" " * len(string_key), string_key, string_duration]
+            elif tmp_key == "LED":
+                color, control = tmp_value
+                color = color.lower()
+                if isinstance(control, list):
+                    control = f"{control[0]}~{control[1]} s"
+                elif isinstance(control, (int, float)):
+                    control = f"{control} s"
+                else:
+                    control = f"{control}"
+                
+                _, string_key, string_duration = tab_block(
+                    f"-{color}{tmp_key}-", f"-{control}-", sub_char="-"
+                )
+                final_blocks = [" " * len(string_key), string_key, string_duration]
 
             # --- Error Handling ---
             elif tmp_key in ("Pass",):
@@ -405,6 +419,24 @@ class TaskInstance:
                 yield f"BuzzerOff"
                 self.log_history.append({"time": GetTime(), "details": f"{tmp_key}Off"})
 
+            elif tmp_key == "LED":
+                color, control = tmp_value
+                color = color.lower()
+                if isinstance(control, str):
+                    assert control in ("On", "Off"), f"Invalid LED control: {control}"
+                    if control == "On":
+                        uprint(f"-{color}LED-")
+                    self.log_history.append({"time": GetTime(), "details": f"{color}LED{control}"})
+                    yield f"{color}LED{control}"
+                else:
+                    tmp_duration = get_value(control)
+                    timer += tmp_duration
+                    uprint(f"-{color}LED-")
+                    self.log_history.append({"time": GetTime(), "details": f"{color}LEDOn"})
+                    yield f"{color}LEDOn"
+                    time.sleep(tmp_duration)
+                    yield f"{color}LEDOff"
+                    self.log_history.append({"time": GetTime(), "details": f"{color}LEDOff"})
             elif tmp_key in ("Pass",):
                 pass
             else:
@@ -456,7 +488,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("Prederr_PC_Diff", "test_file")
+    x = GetModules("Prederr_CL_Omit", "test_file")
 
     t0 = time.time()
     for _command in x.run():

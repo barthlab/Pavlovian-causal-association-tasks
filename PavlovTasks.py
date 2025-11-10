@@ -52,6 +52,8 @@ def main():
     fakerelay_pin = Relay(Config.FAKERELAY_SOLENOID_PIN)
     peltier_left_pin = Relay(Config.PELTIER_LEFT_PIN)
     peltier_right_pin = Relay(Config.PELTIER_RIGHT_PIN)
+    blue_led_pin = Relay(Config.BLUE_LED_PIN)
+    lime_led_pin = Relay(Config.LIME_LED_PIN)
 
     microscope_pin = Pin(Config.MICROSCOPE_TTL_PULSE, GPIO.OUT)
     video_pin = Pin(Config.VIDEO_TTL_PULSE, GPIO.OUT)
@@ -125,6 +127,15 @@ def main():
             elif command == 'FakeRelayOff':
                 fakerelay_pin.off()
 
+            elif command == 'BlueLEDOn':
+                blue_led_pin.on()
+            elif command == 'BlueLEDOff':
+                blue_led_pin.off()
+            elif command == 'LimeLEDOn':
+                lime_led_pin.on()
+            elif command == 'LimeLEDOff':
+                lime_led_pin.off()
+                
             elif command == 'RegisterBehavior':
                 locomotion_encoder.archive()
                 lick_detector.archive()

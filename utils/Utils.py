@@ -31,6 +31,8 @@ UNICODE_TRIAL = {
     "Buzzer8000": "\x1b[45mBuzzer8000\x1b[0m",
     "no-lick": "\x1b[31mno-lick\x1b[0m",
     "lick": "\x1b[32mlick\x1b[0m",
+    "blueLED": "\x1b[44mBlueLED\x1b[0m",
+    "limeLED": "\x1b[42mLimeLED\x1b[0m",
 }
 
 

@@ -29,6 +29,9 @@ VIDEO_TTL_PULSE = 12
 BUZZER_PIN = 33  # make sure it's PWM pin
 LICKPORT_PIN = 29
 
+BLUE_LED_PIN = None
+LIME_LED_PIN = None
+
 
 # Hardware Configuration Flags
 PWM_FLAG = False
