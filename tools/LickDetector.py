@@ -41,12 +41,14 @@ class LickDetector:
         Args:
             channel: GPIO channel that triggered the event.
         """
+        # current_state = GPIO.input(channel)
+        # if current_state == GPIO.LOW:
+        #     return
+        # time.sleep(1/Config.LICKING_MAXIMUM_FREQUENCY)
+        # current_state = GPIO.input(channel)
+        # if current_state == GPIO.LOW:
         current_state = GPIO.input(channel)
-        if current_state == GPIO.LOW:
-            return
-        time.sleep(1/Config.LICKING_MAXIMUM_FREQUENCY)
-        current_state = GPIO.input(channel)
-        if current_state == GPIO.LOW:
+        if current_state == GPIO.HIGH:
             print(":P", end='', flush=True)
             self.history.append([GetTime(),])
 
