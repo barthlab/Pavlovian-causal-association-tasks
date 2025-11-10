@@ -31,6 +31,7 @@ args.add_argument(
 args.add_argument("-buzzer", "--buzzer", action="store_true", help="check buzzer")
 args.add_argument("-temperature", "--temperature", action="store_true", help="check temperature sensor")
 args.add_argument("-peltier", "--peltier", action="store_true", help="check peltier")
+args.add_argument("-LED", "--LED", action="store_true", help="check LED")
 cfg = args.parse_args()
 print(cfg)
 
@@ -65,6 +66,25 @@ def check_puff():
             time.sleep(2)
             i.off()
             time.sleep(5)
+    GPIO.cleanup()
+
+
+def check_LED():
+    start_time = time.time()
+    print(f"Starting puff check at: {start_time}")
+
+    GPIO.setmode(GPIO.BOARD)
+    check_pins = [
+        Relay(Config.BLUE_LED_PIN),
+        Relay(Config.LIME_LED_PIN),
+    ]
+    while input("Press Enter to test LED (or type anything to stop): "):
+        for i in check_pins:
+            i.on()
+        if input("Press Enter to turn off LED (or type anything to stop): "):
+            break
+        for i in check_pins:
+            i.off()
     GPIO.cleanup()
 
 
@@ -311,3 +331,8 @@ if __name__ == "__main__":
     elif cfg.peltier:
         print("Checking peltier...")
         check_peltier()
+    elif cfg.LED:
+        print("Checking LED...")
+        check_LED()
+    else:
+        print("No check specified. Exiting.")
