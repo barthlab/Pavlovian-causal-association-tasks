@@ -27,6 +27,7 @@ class Buzzer:
         if Config.PWM_FLAG: # PWM Buzzer
             print("Initializing PWM Buzzer, make sure you are in the right pigpiod sample rate...")
             self.buzzer = PWMOutputDevice(f"BOARD{buzzer_pin}", frequency=frequency)
+            self.buzzer.value = 1
         else:
             self.buzzer = Pin(buzzer_pin, GPIO.OUT)
             self.buzzer.output(GPIO.HIGH)
@@ -53,7 +54,7 @@ class Buzzer:
         Stops PWM signal or sets pin HIGH for digital mode.
         """
         if Config.PWM_FLAG: # PWM Buzzer
-            self.buzzer.value = 0
+            self.buzzer.value = 1
         else:
             self.buzzer.output(GPIO.HIGH)
 
