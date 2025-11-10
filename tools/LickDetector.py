@@ -27,7 +27,7 @@ class LickDetector:
             lickpin: GPIO pin number connected to lick sensor.
             exp_name: Experiment name for data file naming.
         """
-        self.lickpin = Pin(lickpin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        self.lickpin = Pin(lickpin, GPIO.IN)
         self.history: List[List[float]] = [[GetTime(),],]
 
         self.writer = CSVFile(path.join(Config.SAVE_DIR, f"LICK_{exp_name}.csv"), ["time", ])
