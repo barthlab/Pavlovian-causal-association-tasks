@@ -50,8 +50,10 @@ def check_puff():
         Relay(Config.FAKEPUFF_SOLENOID_PIN),
         Relay(Config.WATER_SOLENOID_PIN),
         Relay(Config.FAKERELAY_SOLENOID_PIN),
+        Relay(Config.BLUE_LED_PIN),
+        Relay(Config.LIME_LED_PIN),
     ]
-    pin_names = ["AirPuff", "FakePuff", "Water", "FakeRelay"]
+    pin_names = ["AirPuff", "FakePuff", "Water", "FakeRelay", "BlueLED", "LimeLED"]
 
     # Main testing loop
     while time.time() - start_time < 600:
