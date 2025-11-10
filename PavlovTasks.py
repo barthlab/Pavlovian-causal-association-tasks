@@ -127,13 +127,13 @@ def main():
             elif command == 'FakeRelayOff':
                 fakerelay_pin.off()
 
-            elif command == 'BlueLEDOn':
+            elif command == 'blueLEDOn':
                 blue_led_pin.on()
-            elif command == 'BlueLEDOff':
+            elif command == 'blueLEDOff':
                 blue_led_pin.off()
-            elif command == 'LimeLEDOn':
+            elif command == 'limeLEDOn':
                 lime_led_pin.on()
-            elif command == 'LimeLEDOff':
+            elif command == 'limeLEDOff':
                 lime_led_pin.off()
                 
             elif command == 'RegisterBehavior':
