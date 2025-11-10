@@ -78,7 +78,7 @@ def check_LED():
         Relay(Config.BLUE_LED_PIN),
         Relay(Config.LIME_LED_PIN),
     ]
-    while input("Press Enter to test LED (or type anything to stop): "):
+    while not input("Press Enter to test LED (or type anything to stop): "):
         for i in check_pins:
             i.on()
         if input("Press Enter to turn off LED (or type anything to stop): "):
