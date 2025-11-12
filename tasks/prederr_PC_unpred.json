@@ -15,7 +15,7 @@
                 ["Buzzer", 0.2]
                 ]]],
               [0.1, ["Timeline", [
-                ["Sleep", 1.7],
+                ["Sleep", 2],
                 ["Buzzer", 0.2]
                 ]]]
             ]],
