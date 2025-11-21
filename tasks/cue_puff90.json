@@ -12,7 +12,7 @@
             ["Sleep", 1.5],
             ["Choice", [
               [0.9, ["VerticalPuff", 0.5]],
-              [0.1, ["Blank", 0.5]]
+              [0.1, ["FakeRelay", 0.5]]
             ]],
             ["Sleep", [8, 12]]
           ]
