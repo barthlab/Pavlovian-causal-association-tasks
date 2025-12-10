@@ -263,8 +263,11 @@ class TaskInstance:
 
         # Generate and print the final ASCII art for the entire task.
         vis_block = recursive_paint(self.module_json["task_content"])
-        for vis_line in vis_block:
-            uprint(vis_line)
+        num_block = np.ceil(max(len(vis_line) for vis_line in vis_block) / 80).astype(int)
+        for block_idx in range(num_block):
+            for vis_line in vis_block:
+                uprint(vis_line[block_idx*80:(block_idx+1)*80])
+            print()
 
     def run(self):
         """
@@ -488,7 +491,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("Prederr_CL_Omit", "test_file")
+    x = GetModules("prederr2_CP_omit", "test_file")
 
     t0 = time.time()
     for _command in x.run():

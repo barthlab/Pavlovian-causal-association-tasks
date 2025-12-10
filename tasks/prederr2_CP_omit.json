@@ -1,0 +1,98 @@
+{
+  "task_name": "prediction error task cue ver.2 - puff, 90% association 10% omission",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 30],
+
+
+      
+      ["Trials", {
+        "total_duration": 120,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.5],
+            ["Sleep", 1],
+            ["VerticalPuff", 0.5],
+            ["Sleep", [15, 30, "exp", 0.1433]]
+          ]
+        ]
+      }],      
+
+      ["Trials", {
+        "total_duration": 1,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.5],
+            ["Sleep", 1],
+            ["Pass", 0.5],
+            ["Sleep", [15, 30, "exp", 0.1433]]
+          ]
+        ]
+      }],       
+
+      ["Trials", {
+        "total_duration": 120,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.5],
+            ["Sleep", 1],
+            ["VerticalPuff", 0.5],
+            ["Sleep", [15, 30, "exp", 0.1433]]
+          ]
+        ]
+      }],      
+
+      ["Trials", {
+        "total_duration": 1,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.5],
+            ["Sleep", 1],
+            ["Pass", 0.5],
+            ["Sleep", [15, 30, "exp", 0.1433]]
+          ]
+        ]
+      }],         
+
+      ["Trials", {
+        "total_duration": 120,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.5],
+            ["Sleep", 1],
+            ["VerticalPuff", 0.5],
+            ["Sleep", [15, 30, "exp", 0.1433]]
+          ]
+        ]
+      }],      
+
+      ["Trials", {
+        "total_duration": 1,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.5],
+            ["Sleep", 1],
+            ["Pass", 0.5],
+            ["Sleep", [15, 30, "exp", 0.1433]]
+          ]
+        ]
+      }],         
+
+      ["Trials", {
+        "total_duration": 120,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.5],
+            ["Sleep", 1],
+            ["VerticalPuff", 0.5],
+            ["Sleep", [15, 30, "exp", 0.1433]]
+          ]
+        ]
+      }],      
+
+
+      ["Sleep", 30]
+    ]
+  ]
+}

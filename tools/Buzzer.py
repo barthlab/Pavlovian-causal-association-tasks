@@ -32,11 +32,11 @@ class Buzzer:
             self.buzzer = Pin(buzzer_pin, GPIO.OUT)
             self.buzzer.output(GPIO.HIGH)
 
-        # Test the PWM buzzer
-        if Config.PWM_FLAG: # PWM Buzzer
-            self.on()
-            time.sleep(0.1)
-            self.stop()
+        # # Test the PWM buzzer
+        # if Config.PWM_FLAG: # PWM Buzzer
+        #     self.on()
+        #     time.sleep(0.1)
+        #     self.stop()
 
     def on(self):
         """Start buzzer tone output.
