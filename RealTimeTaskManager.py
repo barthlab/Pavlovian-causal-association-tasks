@@ -125,6 +125,21 @@ class TaskInstance:
                     final_blocks[i + 1] = f"     |{line}|"
                 final_blocks[center_height] = " N x " + final_blocks[center_height][5:]
 
+            # --- Repeat: A repeating container ---
+            elif tmp_key == "Repeat":
+                # Render the inner content and wrap it in a container labeled "N x"
+                # to signify a repeating block.
+                result_block = recursive_paint(tmp_value["repeat_content"])
+                max_height = len(result_block) + 2
+                max_width = len(result_block[0]) + 7
+                center_height = max_height // 2
+                final_blocks = [" " * max_width for _ in range(max_height)]
+
+                for i, line in enumerate(result_block):
+                    final_blocks[i + 1] = f"     |{line}|"
+                number_char_offset = 2 + len(str(tmp_value["repeat_times"]))
+                final_blocks[center_height] = f" {tmp_value['repeat_times']}x" + final_blocks[center_height][number_char_offset:]
+
             # --- Choice: Vertical branching with probabilities ---
             elif tmp_key == "Choice":
                 # Render each choice, align them to a uniform width, and stack them
@@ -338,6 +353,11 @@ class TaskInstance:
                     yield from recursive_run(tmp_value["trial_content"])
                     yield "RegisterBehavior"  # Save behavior data after each trial
 
+            elif tmp_key == "Repeat":
+                # Repeats a block of content a specified number of times
+                for _ in range(tmp_value["repeat_times"]):
+                    yield from recursive_run(tmp_value["repeat_content"])
+
             elif tmp_key == "Choice":
                 # Probabilistically selects and executes one of several branches
                 choice_hash_key = get_short_hash(tmp_value)
@@ -491,7 +511,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("prederr2_CP_omit", "test_file")
+    x = GetModules("prederr3_CL_assoc", "test_file")
 
     t0 = time.time()
     for _command in x.run():
