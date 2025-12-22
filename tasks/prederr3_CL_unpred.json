@@ -1,0 +1,78 @@
+{
+  "task_name": "prediction error task cue - LED ver.3, 90% association 10% unpredicted",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 30],
+
+      ["Repeat", {"repeat_times": 3, "repeat_content": 
+        ["Timeline", [     
+          
+        
+          ["Trials", {
+            "total_duration": 120,
+            "trial_content": [
+              "Timeline",[
+                ["Buzzer", 0.5],
+                ["Sleep", 1],
+                
+                ["Repeat", {"repeat_times": 5, "repeat_content": 
+                  ["Timeline", [
+                    ["LED", ["Blue", 0.05]],
+                    ["Sleep", 0.05]
+                    ]
+                ]}],
+
+
+                ["Sleep", [15, 30, "exp", 0.1433]]
+              ]
+            ]
+          }],      
+
+          ["Trials", {
+            "total_duration": 1,
+            "trial_content": [
+              "Timeline",[
+                ["Pass", 0.5],
+                ["Sleep", 1],
+                
+                ["Repeat", {"repeat_times": 5, "repeat_content": 
+                  ["Timeline", [
+                    ["LED", ["Blue", 0.05]],
+                    ["Sleep", 0.05]
+                    ]
+                ]}],
+
+
+                ["Sleep", [15, 30, "exp", 0.1433]]
+              ]
+            ]
+          }]       
+        ]]}
+      ],
+
+
+      ["Trials", {
+        "total_duration": 120,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.5],
+            ["Sleep", 1],
+            
+            ["Repeat", {"repeat_times": 5, "repeat_content": 
+                  ["Timeline", [
+                    ["LED", ["Blue", 0.05]],
+                    ["Sleep", 0.05]
+                    ]
+            ]}],
+
+            ["Sleep", [15, 30, "exp", 0.1433]]
+          ]
+        ]
+      }],      
+
+
+      ["Sleep", 30]
+    ]
+  ]
+}
