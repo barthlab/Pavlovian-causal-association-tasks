@@ -8,7 +8,12 @@ import time
 from typing import cast
 from gpiozero import PWMOutputDevice
 from utils.PinManager import Pin
-
+"""
+To achieve certain PWM frequency, we need to set the pigpiod sample rate to 1us.
+Check the following links for more information:
+https://abyz.me.uk/rpi/pigpio/python.html#set_PWM_frequency
+https://raspberrypi.stackexchange.com/questions/56116/max-frequency-can-created-by-wave-function-in-pigpio-library
+"""
 
 class Buzzer:
     """PWM-based buzzer controller for audio stimulus delivery.
