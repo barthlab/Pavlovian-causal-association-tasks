@@ -1,6 +1,6 @@
 {
   "task_name": "prediction error task cue - puff ver.4, 90% association 5% omission 5% unpredicted",
-  "task_rng": "default",
+  "task_rng": "cycle2",
   "task_content": [
     "Timeline", [
       ["Sleep", 30],

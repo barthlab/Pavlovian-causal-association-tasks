@@ -5,6 +5,7 @@ import pickle
 from scipy.special import i0
 import Config
 from collections import deque
+import re
 
 master_rng = np.random.default_rng(Config.RANDOMSEED)
 if Config.RANDOMSEED is not None:
@@ -107,6 +108,35 @@ class RepulsivePRNG:
                 return candidate
 
 
+class CyclicNoisePRNG:
+    """A deterministic cyclic RNG with optional wraparound noise."""
+
+    def __init__(self, cycle_size: int, sigma: float, rng_instance: np.random.Generator):
+        if not isinstance(cycle_size, int) or cycle_size <= 0:
+            raise ValueError("cycle_size must be a positive integer.")
+        if sigma < 0:
+            raise ValueError("sigma must be non-negative.")
+        if sigma > 0.5:
+            raise ValueError("sigma must be <= 0.5 for stable cyclic wrapping.")
+
+        self._rng = rng_instance
+        self._sigma = sigma
+        self._cycle_size = cycle_size
+        self._cycle_values = [(idx + 0.5) / cycle_size for idx in range(cycle_size)]
+        self._state = 0
+
+    def random(self) -> float:
+        """Generates the next cyclic value in [0, 1)."""
+        base_value = self._cycle_values[self._state]
+        self._state = (self._state + 1) % self._cycle_size
+
+        if self._sigma <= 0:
+            return base_value
+
+        noise = (self._rng.random() * 2 - 1) * self._sigma
+        return (base_value + noise) % 1.0
+
+
 class NumberGenerator:
     """Unified random number generator supporting standard and repulsive algorithms."""
 
@@ -114,10 +144,10 @@ class NumberGenerator:
         """Initialize the number generator.
 
         Args:
-            generator_type: Type of generator ('default' or 'repulsive').
+            generator_type: Type of generator ('default', 'repulsive', or 'cycleN', e.g., 'cycle2').
             dimension: Number of independent streams to create.
             **kwargs: Additional arguments for the 'repulsive' generator, e.g.,
-                      history_size=10, concentration=5.0, decay=0.75, strength=0.9
+                      history_size=10, concentration=5.0, decay=0.75, sigma=0.1.
 
         Raises:
             ValueError: If dimension is not a positive integer or generator_type is invalid.
@@ -148,8 +178,25 @@ class NumberGenerator:
                     rng_instance=rng
                 ) for rng in self._child_rngs
             ]
+        elif self.generator_type.startswith('cycle'):
+            cycle_match = re.fullmatch(r"cycle(\d+)", self.generator_type)
+            if not cycle_match:
+                raise ValueError(
+                    "Invalid generator type. Use 'default', 'repulsive', or 'cycleN' (e.g., 'cycle2')."
+                )
+
+            cycle_size = int(cycle_match.group(1))
+            self._generators = [
+                CyclicNoisePRNG(
+                    cycle_size=cycle_size,
+                    sigma=kwargs.get('sigma', 0.1),
+                    rng_instance=rng
+                ) for rng in self._child_rngs
+            ]
         else:
-            raise ValueError(f"Invalid generator type. Choose 'default' or 'repulsive', got {generator_type}.")
+            raise ValueError(
+                f"Invalid generator type. Choose 'default', 'repulsive', or 'cycleN', got {generator_type}."
+            )
 
     def random_from_stream(self, stream_id: int) -> float:
         """Get the next random value from a specific stream.
