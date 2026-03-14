@@ -76,6 +76,7 @@ class TaskInstance:
                 A list of strings, where each string is a row of the generated
                 ASCII art. All strings in the list are guaranteed to have the same length.
             """
+            assert len(tmp_list) == 2, f"Invalid task structure: {tmp_list}"
             tmp_key, tmp_value = tmp_list
             final_blocks = []
 
@@ -511,7 +512,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("prederr3_CL_assoc", "test_file")
+    x = GetModules("prederr4_CL_probe", "test_file")
 
     t0 = time.time()
     for _command in x.run():
