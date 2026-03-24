@@ -1,0 +1,73 @@
+{
+  "task_name": "prediction error task puff ver.5, 90% US@15s, 5% US@7.5s (early), 5% US@30s (delayed omission)",
+  "task_rng": "cycle2",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 15],
+
+      
+      ["Repeat", {"repeat_times": 10, "repeat_content": 
+        ["Timeline", [
+      
+          ["Trials", {
+            "total_duration": 120,
+            "trial_content": [
+              "Timeline",[
+                
+                ["Sleep", 15],
+
+                ["VerticalPuff", 0.5]
+                
+              ]
+            ]
+          }],      
+
+          ["Trials", {
+            "total_duration": 1,
+            "trial_content": [
+
+              "Choice", [
+
+                [0.5, ["Timeline",[
+
+                  ["Sleep", 7.5],
+
+                  ["VerticalPuff", 0.5]
+                  
+                ]]],
+
+                [0.5, ["Timeline",[
+                  
+                  ["Sleep", 30],
+
+                  ["VerticalPuff", 0.5]
+
+                ]]]
+
+            ]]
+          }]
+
+
+
+        ]]}
+      ],
+
+
+      ["Trials", {
+        "total_duration": 60,
+        "trial_content": [
+          "Timeline",[
+            
+            ["Sleep", 15],
+
+            ["VerticalPuff", 0.5]
+            
+          ]
+        ]
+      }],      
+
+
+      ["Sleep", 30]
+    ]
+  ]
+}

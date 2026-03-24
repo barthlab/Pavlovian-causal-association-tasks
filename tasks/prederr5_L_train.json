@@ -1,0 +1,30 @@
+{
+  "task_name": "prediction error task LED ver.5, 100% association",
+   "task_rng": "cycle2",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 15],
+
+      ["Trials", {
+        "total_duration": 1200,
+        "trial_content": [
+          "Timeline",[
+            
+            ["Sleep", 15],
+
+            ["Repeat", {"repeat_times": 3, "repeat_content": 
+              ["Timeline", [
+                ["LED", ["Blue", 0.05]],
+                ["Sleep", 0.15]
+                ]
+            ]}]
+
+            
+          ]
+        ]
+        }],
+
+      ["Sleep", 30]
+    ]
+  ]
+}
