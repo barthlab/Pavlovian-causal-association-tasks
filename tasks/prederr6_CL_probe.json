@@ -1,6 +1,6 @@
 {
   "task_name": "prediction error task cue - LED ver.6, 90% association 5% omission 5% deviant",
-   "task_rng": "cycle5",
+   "task_rng": "cycle2",
   "task_content": [
     "Timeline", [
       ["Sleep", 30],
