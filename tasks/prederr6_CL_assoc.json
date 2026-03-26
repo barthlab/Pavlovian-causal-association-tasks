@@ -1,0 +1,27 @@
+{
+  "task_name": "prediction error task cue - LED ver.6, association",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 30],
+      ["Trials", {
+        "total_duration": 1000,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.1],
+
+            ["Repeat", {"repeat_times": 3, "repeat_content": 
+              ["Timeline", [
+                ["LED", ["Blue", 0.05]],
+                ["Sleep", 0.15]
+                ]
+            ]}],
+
+            ["Sleep", 10]
+          ]
+        ]
+      }],
+      ["Sleep", 30]
+    ]
+  ]
+}

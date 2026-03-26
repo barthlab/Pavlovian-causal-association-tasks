@@ -1,0 +1,80 @@
+{
+  "task_name": "prediction error task cue - LED ver.6, 90% association 5% omission 5% deviant",
+   "task_rng": "cycle5",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 30],
+
+      ["Repeat", {"repeat_times": 10, "repeat_content": 
+        ["Timeline", [
+          ["Trials", {
+            "total_duration": 100,
+            "trial_content": [
+              "Timeline",[
+                ["Buzzer", 0.1],
+                
+                ["Repeat", {"repeat_times": 3, "repeat_content": 
+                  ["Timeline", [
+                    ["LED", ["Blue", 0.05]],
+                    ["Sleep", 0.15]
+                    ]
+                ]}],
+
+                ["Sleep", 10]
+              ]
+            ]
+          }],      
+
+          ["Trials", {
+            "total_duration": 1,
+            "trial_content": [
+              "Choice", [
+
+                [0.5, ["Timeline",[
+
+                  ["Buzzer", 0.1],
+                  
+                  ["Sleep", 10]
+
+                ]]],
+
+                [0.5, ["Timeline",[
+
+                  ["Buzzer4000", 0.1],
+                  
+                  ["Sleep", 10]
+
+                ]]]
+
+              ]
+
+            ]
+          }]       
+        ]]}
+      ],
+      
+
+
+      ["Trials", {
+        "total_duration": 60,
+        "trial_content": [
+          "Timeline",[
+            ["Buzzer", 0.1],
+            
+            ["Repeat", {"repeat_times": 3, "repeat_content": 
+              ["Timeline", [
+                ["LED", ["Blue", 0.05]],
+                ["Sleep", 0.15]
+                ]
+            ]}],
+
+            ["Sleep", 10]
+          ]
+        ]
+      }],      
+
+
+      ["Sleep", 30]
+    ]
+  ]
+}
