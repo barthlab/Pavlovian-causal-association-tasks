@@ -1,5 +1,5 @@
 {
-  "task_name": "acclimation (water only)",
+  "task_name": "acclimation",
   "task_rng": "default",
   "task_content": [
     "Timeline", [
@@ -11,7 +11,10 @@
             "Timeline",[
               ["Buzzer", 0.2],
               ["Sleep", [3.2,3.8]],
-              ["Water", 0.05],
+              ["Choice", [
+                [0.5,["Water", 0.05]],
+                [0.5,["NoWater",0.05]]
+              ]],
               ["Sleep", [7, 15, "exp", 0.2]]
             ]
         ]
