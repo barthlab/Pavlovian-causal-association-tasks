@@ -4,33 +4,42 @@
   "task_content": [
     "Timeline", [
       ["Sleep", 30],
- 
-        ["Trials", {
-          "total_duration": 540,
-          "trial_content": [
-            "Timeline",[
-              ["Buzzer", 0.2],
-              ["Sleep", [1.2,1.8]],
-              ["Choice", [
-                [0.5,["Timeline",[
-                  ["Repeat",{"repeat_times": 3,"repeat_content":
-                  ["Timeline",
-                    [
-                  ["LED", ["Blue",0.05]],
-                    ["Sleep",[0.15]]]
-                  ]}],
-                  ["Sleep",[1.5]],
-                  ["Water",0.05]
-                ]]],
-                [0.5,["Timeline",[
-                  ["Sleep",[2.1]],
-                  ["NoWater",0.05]
-                ]]]
-              ]],
-              ["Sleep", [7, 15, "exp", 0.2]]
-            ]
+
+      ["Trials", {
+        "total_duration": 540,
+        "trial_content": [
+          "Timeline", [
+
+            ["Buzzer", 0.2],
+
+            ["Sleep", [1.2, 1.8]],
+
+            ["Choice", [
+              [0.5, ["Timeline", [
+                ["Repeat", {
+                  "repeat_times": 3,
+                  "repeat_content": [
+                    "Timeline", [
+                      ["LED", ["Blue", 0.05]],
+                      ["Sleep", 0.15]
+                    ]
+                  ]
+                }],
+                ["Sleep", 1.5],
+                ["Water", 0.05]
+              ]]],
+              [0.5, ["Timeline", [
+                ["Sleep", 2.1],
+                ["NoWater", 0.05]
+              ]]]
+            ]],
+
+            ["Sleep", [7, 15, "exp", 0.2]]
+
+          ]
         ]
       }],
+      
       ["Sleep", 30]
     ]
   ]
