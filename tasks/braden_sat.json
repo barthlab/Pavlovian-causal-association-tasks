@@ -17,11 +17,11 @@
             ["Choice", [
               [0.5, ["Timeline", [
                 ["Repeat", {
-                  "repeat_times": 3,
+                  "repeat_times": 5,
                   "repeat_content": [
                     "Timeline", [
-                      ["LED", ["Blue", 0.05]],
-                      ["Sleep", 0.15]
+                      ["LED", ["Blue", 0.005]],
+                      ["Sleep", 0.045]
                     ]
                   ]
                 }],
