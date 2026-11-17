@@ -15,14 +15,16 @@ class Relay:
     configuration settings. Automatically initializes to off state.
     """
 
-    def __init__(self, relaypin: Optional[int]):
+    def __init__(self, relaypin: Optional[int], mode=Config.HIGH_LEVEL_TRIGGER):
         """Initialize relay with specified GPIO pin.
 
         Args:
             relaypin: GPIO pin number for relay control.
         """
         self.relaypin = Pin(relaypin, GPIO.OUT)
-        if Config.HIGH_LEVEL_TRIGGER:
+        print(f"Initializing relay on pin {relaypin} with mode {'HIGH' if mode else 'LOW'}")
+        self.mode = mode
+        if self.mode:
             self.relaypin.output(GPIO.LOW)
         else:
             self.relaypin.output(GPIO.HIGH)
@@ -32,7 +34,7 @@ class Relay:
 
         Sets appropriate GPIO state based on trigger configuration.
         """
-        if Config.HIGH_LEVEL_TRIGGER:
+        if self.mode:
             self.relaypin.output(GPIO.HIGH)
         else:
             self.relaypin.output(GPIO.LOW)
@@ -42,7 +44,7 @@ class Relay:
 
         Sets appropriate GPIO state based on trigger configuration.
         """
-        if Config.HIGH_LEVEL_TRIGGER:
+        if self.mode:
             self.relaypin.output(GPIO.LOW)
         else:
             self.relaypin.output(GPIO.HIGH)
