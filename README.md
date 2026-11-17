@@ -10,6 +10,7 @@ A toolkit for conducting Pavlovian causal associative learning experiments on Ra
 - Solenoid valves (air puff and water delivery)
 - Lick detector sensor
 - Rotary encoder for locomotion tracking
+- IR beam sensor for poke-initiated tasks
 - Optional: Camera module, audio buzzer
 
 **Software Requirements:**
@@ -62,6 +63,7 @@ You'll be prompted to enter an Experiment ID for data file naming.
 | `sat80active` | Stimulus association task with 80% reward probability (active) |
 | `sat80passive` | Stimulus association task with 80% reward probability (passive) |
 | `RandPuff` | Random air puff delivery for control experiments |
+| `beambreak_sat50` | Poke-initiated trials with sat 50 structure |
 
 ### Hardware Testing
 
@@ -74,6 +76,7 @@ python CheckList.py -water    # Test water delivery
 python CheckList.py -camera   # Test camera (opens web stream)
 python CheckList.py -wheel    # Test rotary encoder
 python CheckList.py -buzzer   # Test audio buzzer
+python CheckList.py -beam     # Test IR beam sensor
 ```
 
 ## Data Collection
@@ -83,9 +86,17 @@ The system automatically records:
 - Event timeline with precise timestamps
 - Lick detection data with response latencies
 - Locomotion data from rotary encoder
+- Beam sensor data for poke-initiated tasks
 - Video recordings (optional, .h264 format)
 
-All data is saved to the `/data/` directory with experiment ID prefixes.
+Outputs are saved under `data/` using the experiment ID:
+
+- `TIMELINE_<id>.csv`: task and stimulus events.
+- `BEAM_<id>.csv`: beam-break timestamps.
+- `LICK_<id>.csv`: lick timestamps.
+- `LOCOMOTION_<id>.csv`: encoder position and direction.
+- `VIDEO_<id>.h264`: video when enabled.
+
 
 ### Video Processing
 
@@ -155,8 +166,10 @@ pavlovian-causal-association-tasks/
 ├── tools/                  # Hardware interface modules
 │   ├── Buzzer.py           # Audio stimulus control
 │   ├── Camera.py           # Video recording
+│   ├── IRBeamDetect.py     # Beam sensor interface
 │   ├── LickDetector.py     # Lick sensor interface
-│   └── PositionRecorder.py # Rotary encoder interface
+│   ├── PositionRecorder.py # Rotary encoder interface
+│   └── Relay.py            # Relay instance
 ├── utils/                  # Utility functions
 │   ├── Logger.py           # Data logging
 │   ├── PinManager.py       # GPIO pin management

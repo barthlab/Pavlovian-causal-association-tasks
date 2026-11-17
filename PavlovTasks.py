@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 import Config as Config
 from RealTimeTaskManager import GetModules
 import argparse
+import os.path as path
 from tools.IRBeamDetect import GetBeamDetector
 from tools.Relay import Relay
 from utils.PinManager import Pin
@@ -64,6 +65,15 @@ def main():
 
     # main loop
     exp_name = input("Experiment ID: ")
+    while path.exists(path.join(Config.SAVE_DIR, f"TIMELINE_{exp_name}.csv")):
+        new_exp_name = input(
+            f"TIMELINE_{exp_name}.csv already exists. "
+            "Press Enter to overwrite, or enter a new Experiment ID: "
+        )
+        if not new_exp_name:
+            break
+        exp_name = new_exp_name
+    print(f"Experiment ID set to: {exp_name}")
 
     lick_detector = GetDetector(exp_name=exp_name)
     locomotion_encoder = GetEncoder(exp_name=exp_name)
