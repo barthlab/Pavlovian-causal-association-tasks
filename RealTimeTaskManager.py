@@ -230,7 +230,7 @@ class TaskInstance:
             elif tmp_key == "BeamBreak":
                 waiting_dur_str = f"After >{tmp_value} s calm"
                 _, string_key, string_duration = tab_block(
-                    f"-poke-", f"-{waiting_dur_str}-", sub_char="-"
+                    f"-poke- initiated", f"-{waiting_dur_str}-", sub_char="-"
                 )
                 final_blocks = [" " * len(string_key), string_key, string_duration]
                 

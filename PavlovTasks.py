@@ -69,7 +69,7 @@ def main():
     locomotion_encoder = GetEncoder(exp_name=exp_name)
     beam_detector = GetBeamDetector(exp_name=exp_name)
     buzzer_ = GetBuzzer()
-    module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector)
+    module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector, beam_detector=beam_detector)
 
     with PiCameraRecorder(exp_name=exp_name, records=video_recording) as camera, TemperatureSensor(exp_name=exp_name, records=cfg.temp) as temp_sensor:
         for _, command in enumerate(module.run()):
