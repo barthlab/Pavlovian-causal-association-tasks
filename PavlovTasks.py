@@ -10,6 +10,7 @@ import RPi.GPIO as GPIO
 import Config as Config
 from RealTimeTaskManager import GetModules
 import argparse
+from tools.IRBeamDetect import GetBeamDetector
 from tools.Relay import Relay
 from utils.PinManager import Pin
 from tools.Camera import PiCameraRecorder
@@ -66,6 +67,7 @@ def main():
 
     lick_detector = GetDetector(exp_name=exp_name)
     locomotion_encoder = GetEncoder(exp_name=exp_name)
+    beam_detector = GetBeamDetector()
     buzzer_ = GetBuzzer()
     module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector)
 
