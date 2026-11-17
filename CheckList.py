@@ -18,6 +18,7 @@ from tools.PositionRecorder import GetEncoder
 from tools.Buzzer import GetBuzzer
 from tools.Relay import Relay
 from tools.TemperatureSensor import TemperatureSensor
+from tools.IRBeamDetect import GetBeamDetector
 
 
 args = argparse.ArgumentParser()
@@ -32,6 +33,7 @@ args.add_argument("-buzzer", "--buzzer", action="store_true", help="check buzzer
 args.add_argument("-temperature", "--temperature", action="store_true", help="check temperature sensor")
 args.add_argument("-peltier", "--peltier", action="store_true", help="check peltier")
 args.add_argument("-LED", "--LED", action="store_true", help="check LED")
+args.add_argument("-beam", "--beam", action="store_true", help="check beam detector")
 cfg = args.parse_args()
 print(cfg)
 
@@ -306,6 +308,41 @@ def check_temperature():
     print("Temperature check complete. Log file has been saved.")
 
 
+def check_beam():
+    """Test beam sensor detection and data logging.
+
+    Monitors beam sensor for 10 minutes, displaying detected breaks
+    and saving data to CSV file.
+    """
+    GPIO.setmode(GPIO.BOARD)
+    exp_name = input("Experiment ID: ")
+    beam_detector = GetBeamDetector(exp_name)
+    start_time = time.time()
+    last_history_len = 0
+
+    print("Monitoring beam sensor for 10 minutes. Press Ctrl+C to stop.")
+    state = beam_detector.beampin.get_input()
+    print(f"Initial beam state: {'broken' if state == GPIO.LOW else 'clear'}")
+
+    try:
+        while time.time() - start_time < 600:
+            new_readings = beam_detector.history[last_history_len:]
+            for reading in new_readings:
+                last_history_len += 1
+                print(
+                    f"Beam break #{last_history_len}, "
+                    f"timestamp: {reading[0]:.2f} ms"
+                )
+            time.sleep(Config.RESPONSE_WINDOW_CHECKING_DT)
+    except KeyboardInterrupt:
+        print("\nStopping beam check.")
+    finally:
+        GPIO.cleanup()
+        beam_detector.archive()
+
+    print("Beam check complete. Log file has been saved.")
+
+
 if __name__ == "__main__":
     if cfg.puff:
         print("Checking puff delivery...")
@@ -334,5 +371,8 @@ if __name__ == "__main__":
     elif cfg.LED:
         print("Checking LED...")
         check_LED()
+    elif cfg.beam:
+        print("Checking beam sensor...")
+        check_beam()
     else:
         print("No check specified. Exiting.")
