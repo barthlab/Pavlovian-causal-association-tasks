@@ -25,13 +25,14 @@ class TaskInstance:
     providing ASCII visualization of task structure and real-time execution
     with precise timing and data logging.
     """
-    def __init__(self, module_json: dict, exp_name: str, lick_detector=None):
+    def __init__(self, module_json: dict, exp_name: str, lick_detector=None, beam_detector=None):
         """Initialize task instance with configuration and logging.
 
         Args:
             module_json: Task configuration dictionary loaded from JSON file.
             exp_name: Experiment name for data file naming.
             lick_detector: Optional lick detector instance for behavioral monitoring.
+            beam_detector: Optional beam detector instance for behavioral monitoring.
         """
         self.log_history = []
 
@@ -44,6 +45,9 @@ class TaskInstance:
 
         # Lick detector
         self.lick_detector = lick_detector
+
+        # Beam detector
+        self.beam_detector = beam_detector
 
         # Log file
         self.writer = CSVFile(
@@ -221,6 +225,15 @@ class TaskInstance:
                         for row in range(center_height + 1):
                             new_strings[row] = f"|{new_strings[row][1:]}"
                     final_blocks.extend(new_strings)
+            
+            # --- Beam Break: An simple container ---
+            elif tmp_key == "BeamBreak":
+                waiting_dur_str = f"After >{tmp_value} s calm"
+                _, string_key, string_duration = tab_block(
+                    f"-poke-", f"-{waiting_dur_str}-", sub_char="-"
+                )
+                final_blocks = [" " * len(string_key), string_key, string_duration]
+                
 
             # --- Base Cases: Simple timed events ---
             elif tmp_key in (
@@ -394,6 +407,18 @@ class TaskInstance:
                     )
                     yield from recursive_run(tmp_value["no-lick"])
 
+            elif tmp_key == "BeamBreak":
+                # Waits for a beam break after a waiting period, acting as a gate
+                
+                actual_wait_duration = self.beam_detector.timeout(tmp_value)
+                timer += actual_wait_duration
+
+                poke_detected_duration = self.beam_detector.wait_for_break()
+                uprint("-poke-")
+                timer += poke_detected_duration
+                self.log_history.append({"time": GetTime(), "details": "Poke"})
+
+
             # --- Hardware/Action Keywords ---
 
             elif tmp_key in {
@@ -512,7 +537,7 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
 
 if __name__ == "__main__":
-    x = GetModules("prederr4_CL_probe", "test_file")
+    x = GetModules("beambreak_sat50", "test_file")
 
     t0 = time.time()
     for _command in x.run():

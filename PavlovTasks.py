@@ -67,7 +67,7 @@ def main():
 
     lick_detector = GetDetector(exp_name=exp_name)
     locomotion_encoder = GetEncoder(exp_name=exp_name)
-    beam_detector = GetBeamDetector()
+    beam_detector = GetBeamDetector(exp_name=exp_name)
     buzzer_ = GetBuzzer()
     module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector)
 
@@ -143,6 +143,7 @@ def main():
                 lick_detector.archive()
                 module.archive()
                 temp_sensor.archive()
+                beam_detector.archive()
             else:
                 print(f"Unknown command: {command}")
                 raise NotImplementedError(f"Command '{command}' not implemented.")

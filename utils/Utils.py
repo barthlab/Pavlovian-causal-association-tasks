@@ -33,6 +33,8 @@ UNICODE_TRIAL = {
     "lick": "\x1b[32mlick\x1b[0m",
     "blueLED": "\x1b[44mBlueLED\x1b[0m",
     "limeLED": "\x1b[42mLimeLED\x1b[0m",
+
+    "poke": "\x1b[46mPoke\x1b[0m"
 }
 
 

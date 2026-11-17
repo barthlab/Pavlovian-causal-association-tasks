@@ -6,6 +6,10 @@ import RPi.GPIO as GPIO
 import Config
 from utils.PinManager import Pin
 from utils.Utils import GetTime
+from os import path
+from utils.Logger import CSVFile
+from copy import deepcopy
+from typing import List
 
 
 class BeamBreakDetector:
@@ -15,7 +19,7 @@ class BeamBreakDetector:
     History stores single-item lists of monotonic timestamps in milliseconds.
     """
 
-    def __init__(self, beampin: int):
+    def __init__(self, beampin: int, exp_name: str):
         """Configure the input pin with a pull-up and falling-edge detection.
 
         Args:
@@ -27,6 +31,8 @@ class BeamBreakDetector:
         )
 
         self.history = []
+        
+        self.writer = CSVFile(path.join(Config.SAVE_DIR, f"BEAM_{exp_name}.csv"), ["time", ])
 
         # Beam break: HIGH -> LOW
         self.beampin.add_event_detect(
@@ -48,6 +54,7 @@ class BeamBreakDetector:
         Returns:
             Approximate seconds waited, accumulated from polling intervals.
         """        
+        assert self.beampin is not None, "Beam pin not initialized"
         start_history_len = len(self.history)
         current_state = self.beampin.get_input()
         if current_state == GPIO.LOW:
@@ -78,6 +85,7 @@ class BeamBreakDetector:
         Returns:
             Total seconds waited, including interruptions by LOW readings.
         """
+        assert self.beampin is not None, "Beam pin not initialized"
         start_history_len = len(self.history)
         start_time = GetTime() / 1000
         last_warning_time = start_time
@@ -104,7 +112,13 @@ class BeamBreakDetector:
                     last_warning_time = now_time
 
             time.sleep(Config.RESPONSE_WINDOW_CHECKING_DT)
+    
+    def archive(self):
+        """Write accumulated beam break data to CSV file and clear history buffer."""
+        tmp_snapshot = deepcopy(self.history)
+        self.writer.addrows(tmp_snapshot)
+        self.history = self.history[len(tmp_snapshot):]
 
 
-def GetBeamDetector() -> BeamBreakDetector:
-    return BeamBreakDetector(beampin=Config.BEAM_BREAK_PIN)
+def GetBeamDetector(exp_name: str) -> BeamBreakDetector:
+    return BeamBreakDetector(beampin=Config.BEAM_BREAK_PIN, exp_name=exp_name)
