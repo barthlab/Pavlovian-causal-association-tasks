@@ -23,6 +23,7 @@ from tools.TemperatureSensor import TemperatureSensor
 
 args = argparse.ArgumentParser()
 args.add_argument("-M", "-Module", "-m", "--M", "--m", type=str, help='Choose the module from Modules.')
+args.add_argument("-ctm", "-CTM", "--ctm", "--CTM", type=str, help='Choose the module from meta module ContigencyTetrahedron.')
 args.add_argument("-cam", "--cam", action='store_true', help="enable camera recording (require more disk space)")
 args.add_argument("-temp", "--temp", action='store_true', help="enable temperature recording")
 cfg = args.parse_args()
@@ -79,7 +80,13 @@ def main():
     locomotion_encoder = GetEncoder(exp_name=exp_name)
     beam_detector = GetBeamDetector(exp_name=exp_name)
     buzzer_ = GetBuzzer()
-    module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector, beam_detector=beam_detector)
+    
+    if cfg.M:
+        module = GetModules(module_name=cfg.M, exp_name=exp_name, lick_detector=lick_detector, beam_detector=beam_detector)
+    elif cfg.ctm:
+        module = GetModules(module_name=cfg.ctm, exp_name=exp_name, meta_ID="CT", lick_detector=lick_detector, beam_detector=beam_detector)
+    else:
+        raise ValueError("No valid module specified. Use -M or -ctm to choose a module.")
 
     with PiCameraRecorder(exp_name=exp_name, records=video_recording) as camera, TemperatureSensor(exp_name=exp_name, records=cfg.temp) as temp_sensor:
         for _, command in enumerate(module.run()):

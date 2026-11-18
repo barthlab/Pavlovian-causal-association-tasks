@@ -389,7 +389,7 @@ class TaskInstance:
                 rx = self.rng.random_from_stream(stream_id)
 
                 probs = [tmp_choice[0] for tmp_choice in tmp_value]
-                assert sum(probs) == 1.0, "Probabilities in 'Choice' must sum to 1."
+                assert np.isclose(sum(probs), 1.0), "Probabilities in 'Choice' must sum to 1. Got: {}".format(sum(probs))
                 choice_index = np.searchsorted(np.cumsum(probs), rx)
                 
                 print(f"Choice: {rx:.3f}, Stream {stream_id}, Compared to {probs}, Chose {choice_index}th option.")
