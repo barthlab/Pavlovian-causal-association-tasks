@@ -8,10 +8,12 @@ and data logging while supporting complex nested task structures.
 import time
 import os
 import os.path as path
+from typing import Optional
 import json
 import numpy as np
 from copy import deepcopy
 from typing import Any, List, Tuple
+from meta_tasks.ContigencyTetrahedron import ContigencyTetrahedronJsonParser
 from utils.Logger import CSVFile
 from utils.Utils import tab_block, cprint, uprint, GetTime
 import Config
@@ -279,6 +281,14 @@ class TaskInstance:
                 final_blocks = [
                     " ",
                 ]
+
+            # --- Forced Commands ---
+            elif (tmp_key.endswith("On") or tmp_key.endswith("Off")) and (tmp_value == "Force"):
+                final_blocks = [
+                    f"-{tmp_key[:-2] if tmp_key.endswith('On') else tmp_key[:-3]}-" 
+                    + ("On" if tmp_key.endswith("On") else "Off"),
+                ]
+
             else:
                 raise NotImplementedError(
                     f"JSON command '{tmp_key}' is not implemented!"
@@ -488,6 +498,10 @@ class TaskInstance:
                     self.log_history.append({"time": GetTime(), "details": f"{color}LEDOff"})
             elif tmp_key in ("Pass",):
                 pass
+            elif (tmp_key.endswith("On") or tmp_key.endswith("Off")) and (tmp_value == "Force"):
+                uprint(f"-{tmp_key[:-2] if tmp_key.endswith('On') else tmp_key[:-3]}-")
+                self.log_history.append({"time": GetTime(), "details": tmp_key})
+                yield tmp_key
             else:
                 raise NotImplementedError(f"Json command {tmp_key} Not Implemented!")
 
@@ -505,7 +519,19 @@ class TaskInstance:
         self.log_history = self.log_history[len(tmp_snapshot) :]
 
 
-def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
+def default_json_loader(module_name: str):
+    for dirpath, _, filenames in os.walk(Config.TASK_DIR):
+        for filename in filenames:
+            if (
+                filename[-5:] == ".json"
+                and filename[:-5].casefold() == module_name.casefold()
+            ):
+                with open(path.join(dirpath, filename), "r") as file:
+                    return json.load(file)    
+    raise FileNotFoundError(f"Module {module_name} not found in {Config.TASK_DIR}.")
+
+                    
+def GetModules(module_name: str, exp_name: str, meta_ID: Optional[str] = None, **kwargs) -> TaskInstance:
     """Load and create task instance from JSON module file.
 
     Searches the task directory for a JSON file matching the module name
@@ -518,26 +544,26 @@ def GetModules(module_name: str, exp_name: str, **kwargs) -> TaskInstance:
 
     Returns:
         Configured TaskInstance ready for execution.
-
-    Raises:
-        FileNotFoundError: If no matching module file is found.
     """
-    for dirpath, _, filenames in os.walk(Config.TASK_DIR):
-        for filename in filenames:
-            if (
-                filename[-5:] == ".json"
-                and filename[:-5].casefold() == module_name.casefold()
-            ):
-                with open(path.join(dirpath, filename), "r") as file:
-                    module_json = json.load(file)
-                    return TaskInstance(
-                        module_json=module_json, exp_name=exp_name, **kwargs
-                    )
-    raise FileNotFoundError(f"Module {module_name} not found in {Config.TASK_DIR}.")
+
+    if meta_ID is None:
+        module_json = default_json_loader(module_name)
+        return TaskInstance(
+            module_json=module_json, exp_name=exp_name, **kwargs
+        )
+    elif meta_ID == "CT":
+        module_json = ContigencyTetrahedronJsonParser.custom_json_loader(module_name)
+        return TaskInstance(
+            module_json=module_json, exp_name=exp_name, **kwargs
+        )
+    else:
+        raise ValueError(f"Unknown meta_ID: {meta_ID}")
+
 
 
 if __name__ == "__main__":
-    x = GetModules("beambreak_sat50", "test_file")
+    # x = GetModules("beambreak_sat50", "test_file")
+    x = GetModules("PW_R3_006_A2B1O0", "test_file", meta_ID="CT")
 
     t0 = time.time()
     for _command in x.run():

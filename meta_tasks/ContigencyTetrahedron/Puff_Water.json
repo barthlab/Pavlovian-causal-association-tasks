@@ -1,0 +1,45 @@
+{
+  "task_name": "Poke initiated puff water contingency task",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 10],
+      ["Trials", {
+        "total_duration": 600,
+        "trial_content": [
+          "Timeline",[
+            ["BeamBreak", 3],
+            ["Sleep", [1.2, 1.8]],
+            ["Choice", [
+              ["AAA", ["Timeline", [                
+                ["VerticalPuff", 0.5], 
+                ["Sleep", 1.5],
+                ["Water", 0.05]
+              ]]],
+
+              ["BBB", ["Timeline", [        
+                ["VerticalPuff", 0.5], 
+                ["Sleep", 1.5],
+                ["NoWater", 0.05]
+              ]]],
+
+              ["CCC", ["Timeline", [
+                ["Blank", 0.5],
+                ["Sleep", 1.5],
+                ["Water", 0.05]
+              ]]],
+
+              ["DDD", ["Timeline", [
+                ["Blank", 0.5],
+                ["Sleep", 1.5],
+                ["NoWater", 0.05]
+              ]]]
+
+            ]]
+          ]
+        ]
+      }],
+      ["Sleep", 10]
+    ]
+  ]
+}

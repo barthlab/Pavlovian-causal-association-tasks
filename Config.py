@@ -45,6 +45,7 @@ print("Attention: Training is now using ", "high level trigger." if HIGH_LEVEL_T
 # Data Directory Configuration
 SAVE_DIR = path.join(path.dirname(__file__), "data")
 TASK_DIR = path.join(path.dirname(__file__), "tasks")
+METATASK_DIR = path.join(path.dirname(__file__), "meta_tasks")
 os.makedirs(SAVE_DIR, exist_ok=True)
 
 
