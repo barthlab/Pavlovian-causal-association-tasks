@@ -1,0 +1,41 @@
+{
+  "task_name": "Poke initiated acclimation water contingency task",
+  "task_rng": "default",
+  "task_content": [
+    "Timeline", [
+      ["Sleep", 10],
+      ["Trials", {
+        "total_duration": 600,
+        "trial_content": [
+          "Timeline",[
+            ["BeamBreak", 3],
+            ["Sleep", [1.2, 1.8]],
+            ["Choice", [
+              ["AAA", ["Timeline", [
+                ["Sleep", 2],
+                ["Water", 0.05]
+              ]]],
+
+              ["BBB", ["Timeline", [
+                ["Sleep", 2],
+                ["NoWater", 0.05]
+              ]]],
+
+              ["CCC", ["Timeline", [
+                ["Sleep", 2],
+                ["Water", 0.05]
+              ]]],
+
+              ["DDD", ["Timeline", [
+                ["Sleep", 2],
+                ["NoWater", 0.05]
+              ]]]
+
+            ]]
+          ]
+        ]
+      }],
+      ["Sleep", 10]
+    ]
+  ]
+}

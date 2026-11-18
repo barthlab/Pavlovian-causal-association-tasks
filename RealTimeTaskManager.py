@@ -563,7 +563,7 @@ def GetModules(module_name: str, exp_name: str, meta_ID: Optional[str] = None, *
 
 if __name__ == "__main__":
     # x = GetModules("beambreak_sat50", "test_file")
-    x = GetModules("PW_R3_006_A2B1O0", "test_file", meta_ID="CT")
+    x = GetModules("ACC_R3_006_A2B1O0", "test_file", meta_ID="CT")
 
     t0 = time.time()
     for _command in x.run():

@@ -10,6 +10,7 @@ from meta_tasks.ContigencyTetrahedron import ContigencyTetrahedronConfig
 
 led_water_path = path.join(Config.METATASK_DIR, "ContigencyTetrahedron", "LED_Water.json")
 puff_water_path = path.join(Config.METATASK_DIR, "ContigencyTetrahedron", "Puff_Water.json")
+acclimation_water_path = path.join(Config.METATASK_DIR, "ContigencyTetrahedron", "ACC.json")
 
 
 def recursive_replace(obj, old, new):
@@ -30,6 +31,9 @@ def custom_json_loader(module_name: str):
             module_json = json.load(file)  
     elif ct_config.task == "PW":
         with open(puff_water_path, "r") as file:
+            module_json = json.load(file)  
+    elif ct_config.task == "ACC":
+        with open(acclimation_water_path, "r") as file:
             module_json = json.load(file)  
     else:
         raise ValueError(f"Unknown task: {ct_config.task}")
