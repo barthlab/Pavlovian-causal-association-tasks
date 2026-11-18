@@ -505,12 +505,16 @@ class TaskInstance:
             else:
                 raise NotImplementedError(f"Json command {tmp_key} Not Implemented!")
 
-        # Start the recursive execution from the top-level configuration
-        yield from recursive_run(self.module_json["task_content"])
-
-        self.log_history.append({"time": GetTime(), "details": "task end"})
-        yield "RegisterBehavior"
-        cprint("Task ends.", "B")
+        try:
+            # Start the recursive execution from the top-level configuration
+            yield from recursive_run(self.module_json["task_content"])
+        except KeyboardInterrupt:
+            print("\nManually interrupted.")
+        finally:
+            self.log_history.append({"time": GetTime(), "details": "task end"})
+            yield "RegisterBehavior"
+            cprint("Task ends.", "B")
+            
 
     def archive(self):
         """Write accumulated task log data to CSV file and clear history buffer."""
