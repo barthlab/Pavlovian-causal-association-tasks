@@ -15,7 +15,7 @@ A toolkit for conducting Pavlovian causal associative learning experiments on Ra
 
 **Software Requirements:**
 
-- Raspberry Pi OS Bullseye (32-bit legacy)
+- Raspberry Pi OS with the libcamera camera stack for camera use
 - Python 3.11+
 
 ## Installation
@@ -27,15 +27,46 @@ A toolkit for conducting Pavlovian causal associative learning experiments on Ra
    cd Pavlovian-causal-association-tasks
    ```
 
-2. Install dependencies:
+2. Install dependencies. If you use a virtual environment, create it with the
+   Raspberry Pi OS system Python so it can access the OS camera packages.
 
    ```bash
-   pip install numpy colorist flask 
+   /usr/bin/python3 -m venv --system-site-packages .venv
+   source .venv/bin/activate
+   python -m pip install numpy colorist flask
    ```
 
 3. Configure hardware connections:
 
    Edit `Config.py` to match your GPIO pin outs.
+
+### Camera setup
+
+Install Picamera2 from Raspberry Pi OS and list detected cameras on modern images.
+
+```bash
+sudo apt install python3-picamera2
+rpicam-hello --list-cameras
+```
+
+Run `python3 CheckList.py -camera` and open the printed URL ending in
+`:8000/video_feed`. Disconnect and reopen the stream to check camera reuse.
+Press Ctrl+C to stop the checklist before starting a recording.
+
+For a smoke test on the rig, point `Config.SAVE_DIR` in the bench checkout
+at a disposable data directory and use a fresh experiment ID for each command.
+
+```bash
+python3 PavlovTasks.py -M null
+python3 PavlovTasks.py -M null -cam
+```
+
+The `-cam` run writes raw H.264 using `CAMERA_RESOLUTION` and `FRAME_RATE`
+from `Config.py` (1080 × 768 at 30 fps by default).
+
+Raspberry Pi bench validation is pending. Record the Pi and camera models, OS
+image, Python, Picamera2 and libcamera versions alongside the baseline and
+migration results.
 
 ## Usage
 

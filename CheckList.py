@@ -9,9 +9,6 @@ import RPi.GPIO as GPIO
 import Config as Config
 import argparse
 import time
-from flask import Flask, Response
-import io
-import picamera
 import socket
 from tools.LickDetector import GetDetector
 from tools.PositionRecorder import GetEncoder
@@ -164,24 +161,32 @@ def check_camera():
     Creates a Flask web server to stream live video from the Pi camera.
     Access the stream through the displayed URL to verify camera operation.
     """
+    from io import BytesIO
+
+    from flask import Flask, Response
+    from picamera2 import Picamera2
+
     app = Flask(__name__)
 
     def gen_frames():
         """Generate video frames from Pi camera for streaming."""
-        with picamera.PiCamera(
-            resolution=Config.CAMERA_RESOLUTION, framerate=Config.FRAME_RATE
-        ) as camera:
-            stream = io.BytesIO()
-            for _ in camera.capture_continuous(
-                stream, format="jpeg", use_video_port=True
-            ):
-                stream.seek(0)
-                frame = stream.read()
-
-                yield (b"--frame\r\nContent-Type: image/jpeg\r\n\r\n" + frame + b"\r\n")
-
+        with Picamera2() as camera, BytesIO() as stream:
+            frame_duration = round(1_000_000 / Config.FRAME_RATE)
+            config = camera.create_video_configuration(
+                main={"size": Config.CAMERA_RESOLUTION, "format": "BGR888"},
+                controls={"FrameDurationLimits": (frame_duration, frame_duration)},
+                display=None,
+            )
+            camera.start(config, show_preview=False)
+            while True:
                 stream.seek(0)
                 stream.truncate()
+                camera.capture_file(stream, format="jpeg")
+                yield (
+                    b"--frame\r\nContent-Type: image/jpeg\r\n\r\n"
+                    + stream.getvalue()
+                    + b"\r\n"
+                )
 
     @app.route("/video_feed")
     def video_feed():
@@ -212,7 +217,8 @@ def check_camera():
     print("#" * 70)
     print(f"Camera stream available at: http://{ip_address}:{port}/video_feed")
     print("#" * 70)
-    app.run(host="0.0.0.0", port=port, debug=True)
+    # Keep the stream on the server thread so Ctrl+C unwinds its camera context.
+    app.run(host="0.0.0.0", port=port, threaded=False, use_reloader=False)
 
 
 def check_lick():
