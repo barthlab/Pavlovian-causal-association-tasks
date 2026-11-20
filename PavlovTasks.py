@@ -49,10 +49,10 @@ def main():
     """
     GPIO.setmode(GPIO.BOARD)
 
-    water_pin = Relay(Config.WATER_SOLENOID_PIN)
+    water_pin = Relay(Config.WATER_SOLENOID_PIN, False)
     airpuff_pin = Relay(Config.AIRPUFF_SOLENOID_PIN)
     fakepuff_pin = Relay(Config.FAKEPUFF_SOLENOID_PIN)
-    fakerelay_pin = Relay(Config.FAKERELAY_SOLENOID_PIN)
+    fakerelay_pin = Relay(Config.FAKERELAY_SOLENOID_PIN, False)
     peltier_left_pin = Relay(Config.PELTIER_LEFT_PIN)
     peltier_right_pin = Relay(Config.PELTIER_RIGHT_PIN)
     blue_led_pin = Relay(Config.BLUE_LED_PIN)

@@ -28,10 +28,10 @@ ENCODER_B_PIN = 18
 MICROSCOPE_TTL_PULSE = 11
 VIDEO_TTL_PULSE = 12
 
-BUZZER_PIN = 33  # make sure it's PWM pin
+BUZZER_PIN = None #33  # make sure it's PWM pin
 LICKPORT_PIN = 29
 
-BLUE_LED_PIN = None
+BLUE_LED_PIN = 37
 LIME_LED_PIN = None
 
 
@@ -39,7 +39,7 @@ LIME_LED_PIN = None
 PWM_FLAG = False
 print("Attention: Training is now using ", "PWM buzzer." if PWM_FLAG else "non-PWM buzzer.")
 
-HIGH_LEVEL_TRIGGER = False
+HIGH_LEVEL_TRIGGER = True
 print("Attention: Training is now using ", "high level trigger." if HIGH_LEVEL_TRIGGER else "low level trigger.")
 
 # Data Directory Configuration

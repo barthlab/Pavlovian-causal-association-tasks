@@ -48,8 +48,8 @@ def check_puff():
     check_pins = [
         Relay(Config.AIRPUFF_SOLENOID_PIN),
         Relay(Config.FAKEPUFF_SOLENOID_PIN),
-        Relay(Config.WATER_SOLENOID_PIN),
-        Relay(Config.FAKERELAY_SOLENOID_PIN),
+        Relay(Config.WATER_SOLENOID_PIN, False),
+        Relay(Config.FAKERELAY_SOLENOID_PIN, False),
         Relay(Config.BLUE_LED_PIN),
         Relay(Config.LIME_LED_PIN),
     ]
@@ -95,7 +95,7 @@ def check_water():
     """
     GPIO.setmode(GPIO.BOARD)
     WATER_DURATION = 0.05
-    water_pin = Relay(Config.WATER_SOLENOID_PIN)
+    water_pin = Relay(Config.WATER_SOLENOID_PIN, False)
 
     drain_mode = input(
         "Enter anything to enable always-open mode, otherwise feed mode: "
