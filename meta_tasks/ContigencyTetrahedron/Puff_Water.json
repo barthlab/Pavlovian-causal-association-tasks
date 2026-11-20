@@ -8,7 +8,7 @@
         "total_duration": 600,
         "trial_content": [
           "Timeline",[
-            ["BeamBreak", 3],
+            ["BeamBreak", 5],
             ["Sleep", [1.2, 1.8]],
             ["Choice", [
               ["AAA", ["Timeline", [                

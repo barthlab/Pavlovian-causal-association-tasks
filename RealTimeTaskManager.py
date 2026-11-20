@@ -422,6 +422,8 @@ class TaskInstance:
                 
                 actual_wait_duration = self.beam_detector.timeout(tmp_value)
                 timer += actual_wait_duration
+                print(f"Poke window opened!")
+                yield from recursive_run(["Buzzer", 0.5])
 
                 poke_detected_duration = self.beam_detector.wait_for_break()
                 uprint("-poke-")
